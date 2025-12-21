@@ -112,3 +112,32 @@ func PinToggleTopic(title, username string) error {
 	_, err = db.ExecContext(ctx, queryUnPin, userID, topicID)
 	return err
 }
+
+func UpdateTopic(id int, title string, description string) error {
+	db := database.Connect()
+	defer database.Close(db)
+
+	ctx := context.Background()
+
+	query := `
+		UPDATE topics
+		SET title = $1, description = $2
+		WHERE id = $3
+	`
+
+	_, err := db.ExecContext(ctx, query, title, description, id)
+	return err
+}
+
+func DeleteTopic(id int) error {
+	db := database.Connect()
+	defer database.Close(db)
+
+	ctx := context.Background()
+
+	query := `
+		DELETE FROM topics WHERE id = $1;
+	`
+	_, err := db.ExecContext(ctx, query, id)
+	return err
+}

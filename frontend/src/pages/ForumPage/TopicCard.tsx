@@ -2,18 +2,20 @@ import { useState, useMemo, useEffect } from 'react';
 
 import { Card, CardContent, Typography, Box, Chip } from '@mui/material';
 import { LABEL_COLORS, BRAND_PRIMARY } from './forum.constants.ts';
-import { BackendTopic } from '../../types/Forum.tsx';
+import { Topic } from '../../types/Forum.tsx';
 
 import PushPinIcon from '@mui/icons-material/PushPin';
 import EditIcon from '@mui/icons-material/Edit';
 import EditCard from './EditCard.tsx';
 
 interface Props {
-  topic: BackendTopic;
+  topic: Topic;
   onPin: (id: number) => void;
+  onUpdate: (id: number, newTitle: string, newDescription: string) => void;
+  onDelete: (id: number) => void;
 }
 
-const TopicCard = ({ topic, onPin }: Props) => {
+const TopicCard = ({ topic, onPin , onUpdate, onDelete}: Props) => {
   const handlePin = () => {
     onPin(topic.ID);
   };
@@ -102,7 +104,9 @@ const TopicCard = ({ topic, onPin }: Props) => {
       <EditCard
         open = {editOpen}
         onClose={() => setEditOpen(false)}
-        onSubmit={() => setEditOpen(false)}
+        topicID = {topic.ID}
+        onUpdate = {onUpdate}
+        onDelete = {onDelete}
       />
       
     </Card>

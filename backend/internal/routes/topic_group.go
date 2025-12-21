@@ -13,4 +13,6 @@ func topicGroup(r *gin.RouterGroup) {
 	r.POST("/create", middleware.AuthMiddleWare(), ctrl.Create)
 	r.GET("/fetch", middleware.AuthMiddleWare(), ctrl.Fetch)
 	r.POST("/pin", middleware.AuthMiddleWare(), ctrl.Pin)
+	r.PUT("/update/:id", ctrl.Update)
+	r.DELETE("/delete/:id", ctrl.Delete)
 }

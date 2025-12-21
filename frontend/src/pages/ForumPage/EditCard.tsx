@@ -11,36 +11,45 @@ import {
 } from '@mui/material';
 import { X } from 'lucide-react';
 import { BRAND_PRIMARY, BRAND_PRIMARY_HOVER } from './forum.constants.ts';
+import useUpdateTopic from '../../hooks/topic/useUpdateTopic.tsx';
+import useDeleteTopic from '../../hooks/topic/useDeleteTopic.tsx';
 
 interface EditCardProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (title: string, description: string) => void;
+  topicID: number;
+  onUpdate: (id: number, newTitle: string, newDescription: string) => void;
+  onDelete: (id: number) => void;
 }
 
-const EditCard = ({ open, onClose, onSubmit }: EditCardProps) => {
-  const [title, setTitle] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
-
-  const resetForm = () => {
-    setTitle('');
-    setDescription('');
-  };
-
-  const handleClose = () => {
-    resetForm();
-    onClose();
-  };
-
-  const handleSubmit = () => {
-    if (!isFormValid) return;
-    // onSubmit(title, description);
-    onSubmit(title, description);
-    resetForm();
-  };
+const EditCard = ({ open, onClose, topicID, onUpdate, onDelete}: EditCardProps) => {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const {topicUpdate} = useUpdateTopic();
+  const {topicDelete} = useDeleteTopic();
 
   const isFormValid = Boolean(title.trim() && description.trim());
 
+  const handleClose = () => {
+    setTitle('');
+    setDescription('');
+    onClose();
+  };
+
+  const handleSubmit = async () => {
+    if (!isFormValid) return;
+    await topicUpdate(topicID, title, description)
+    // console.log(topicID, title, description)
+    onUpdate(topicID, title, description)
+    handleClose();
+  };
+
+  const handleDelete = async () => {
+    await topicDelete(topicID);
+    onDelete(topicID)
+    handleClose();
+  }
+ 
   const textFieldStyles = {
     '& .MuiOutlinedInput-root': {
       '&:hover fieldset': { borderColor: BRAND_PRIMARY },
@@ -60,75 +69,96 @@ const EditCard = ({ open, onClose, onSubmit }: EditCardProps) => {
       PaperProps={{
         sx: {
           borderRadius: '15px',
-          p: 1,
+          p: 3,
         },
       }}
     >
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          mb: 1,
+        }}
+      >
         <DialogTitle
-          sx={{ fontWeight: 'bold', color: BRAND_PRIMARY, fontSize: '1.5rem' }}
+          sx={{
+            p: 1,
+            fontSize: '1.1rem',
+            fontWeight: 600,
+            color: BRAND_PRIMARY,
+          }}
         >
-          Edit Topic
+          Edit topic
         </DialogTitle>
 
-        <IconButton onClick={handleClose} sx={{ mr: 2 }}>
-          <X size={24} color={BRAND_PRIMARY} />
+        <IconButton onClick={handleClose} size="small">
+          <X size={18} color={BRAND_PRIMARY} />
         </IconButton>
       </Box>
 
-      <DialogContent>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, pt: 1 }}>
+      <DialogContent sx={{ p: 1, mt: 1 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <TextField
             label="New Title"
-            required
+            // size="small"
             fullWidth
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Enter topic title..."
             sx={textFieldStyles}
           />
 
           <TextField
-            label="New Description"
-            required
-            fullWidth
+            label="Description"
+            size="small"
             multiline
-            rows={4}
+            rows={3}
+            fullWidth
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Enter topic description..."
             sx={textFieldStyles}
           />
         </Box>
       </DialogContent>
 
-      <DialogActions sx={{ px: 3, pb: 3 }}>
+      <DialogActions
+        sx={{
+          mt: 2,
+          px: 1,
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
         <Button
-          onClick={handleClose}
+          onClick={handleDelete}
           sx={{
-            color: BRAND_PRIMARY,
             textTransform: 'none',
-            '&:hover': { bgcolor: 'rgba(95, 90, 71, 0.08)' },
+            fontWeight: 600,
+            px: 3,
+            borderRadius: '10px',
+            bgcolor: '#AE887B',
+            color: '#fff',
+            '&:hover': { bgcolor: 'red' },
           }}
         >
-          Cancel
+          Delete
         </Button>
-
         <Button
-        //   onClick={handleSubmit}
           onClick={handleSubmit}
-          variant="contained"
+          variant='contained'
           disabled={!isFormValid}
           sx={{
-            bgcolor: BRAND_PRIMARY,
             textTransform: 'none',
-            borderRadius: '10px',
+            fontWeight: 600,
             px: 3,
+            borderRadius: '10px',
+            bgcolor: BRAND_PRIMARY,
+            // color: '#fff',
             '&:hover': { bgcolor: BRAND_PRIMARY_HOVER },
             '&:disabled': { bgcolor: 'rgba(95, 90, 71, 0.3)' },
           }}
         >
-          Confirm change
+          Save
         </Button>
       </DialogActions>
     </Dialog>

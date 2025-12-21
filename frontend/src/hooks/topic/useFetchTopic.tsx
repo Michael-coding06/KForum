@@ -1,10 +1,10 @@
 import { useState } from "react";
 import api from "../../api/api.tsx";
 import axios from "axios";
-import {BackendTopic} from "../../types/Forum.tsx"
+import {Topic} from "../../types/Forum.tsx"
 
 const useFetchTopic = () => {
-    const [topics, setTopics] = useState<BackendTopic[]>([]);
+    const [topics, setTopics] = useState<Topic[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -13,7 +13,7 @@ const useFetchTopic = () => {
         setError(null);
 
         try {
-            const res = await api.get<BackendTopic[]>("/topic/fetch");
+            const res = await api.get<Topic[]>("/topic/fetch");
             // console.log(res.data)
             setTopics(res.data)
         } catch (error) {

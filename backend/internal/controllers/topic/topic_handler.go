@@ -4,6 +4,7 @@ import (
 	dataTopic "backend/backend/internal/dataaccess"
 	models "backend/backend/internal/models"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -74,4 +75,41 @@ func (c *Controller) Pin(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"topic": []string{req.Title, username}})
+}
+
+func (c *Controller) Update(ctx *gin.Context) {
+	idStr := ctx.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
+		return
+	}
+	var req models.CreateRequest
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid reqeuest"})
+		return
+	}
+
+	err = dataTopic.UpdateTopic(id, req.Title, req.Description)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"updated topic": []string{req.Title, req.Description}})
+}
+
+func (c *Controller) Delete(ctx *gin.Context) {
+	idStr := ctx.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
+		return
+	}
+
+	err = dataTopic.DeleteTopic(id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 }

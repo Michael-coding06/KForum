@@ -1,15 +1,17 @@
 import { Box, Typography } from '@mui/material';
 import TopicCard from './TopicCard.tsx';
-import { BackendTopic } from '../../types/Forum.tsx';
+import { Topic } from '../../types/Forum.tsx';
 import { BRAND_PRIMARY } from './forum.constants.ts';
 
 interface Props {
-  topics: BackendTopic[];
+  topics: Topic[];
   emptyMessage?: string;
   onPin: (id: number) => void;
+  onUpdate: (id: number, newTitle: string, newDescription: string) => void;
+  onDelete: (id: number) => void;
 }
 
-const TopicList = ({ topics, emptyMessage, onPin }: Props) => {
+const TopicList = ({ topics, emptyMessage, onPin , onUpdate, onDelete}: Props) => {
   if (topics.length === 0) {
     return (
       <Box sx={{ textAlign: 'center', py: 8 }}>
@@ -23,7 +25,7 @@ const TopicList = ({ topics, emptyMessage, onPin }: Props) => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       {topics.map(topic => (
-        <TopicCard key={topic.ID} topic={topic} onPin={onPin}/>
+        <TopicCard key={topic.ID} topic={topic} onPin={onPin} onUpdate={onUpdate} onDelete={onDelete}/>
       ))}
     </Box>
   );

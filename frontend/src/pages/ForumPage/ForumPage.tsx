@@ -14,10 +14,9 @@ import { useOutletContext } from "react-router-dom";
 
 import TopicList from './TopicList.tsx';
 import CreateCard from './CreateCard.tsx';
-import EditCard from './EditCard.tsx';
 import useCreateTopic from "../../hooks/topic/useCreateTopic.tsx";
 import usePinTopic from '../../hooks/topic/usePinTopic.tsx';
-import { BackendTopic } from '../../types/Forum.tsx';
+import { Topic } from '../../types/Forum.tsx';
 import { BRAND_PRIMARY, BRAND_PRIMARY_HOVER } from './forum.constants.ts';
 import '../Page.css';
 import logo from '../../image/logo.png';
@@ -29,10 +28,9 @@ const ForumPage = () => {
   const { topicCreate } = useCreateTopic();
   const { topicPin } = usePinTopic();
   
-  const [localTopics, setLocalTopics] = useState<BackendTopic[]>([]);
+  const [localTopics, setLocalTopics] = useState<Topic[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
-  const [editOpen, setEditOpen] = useState<boolean>(false);
 
   useEffect(() => {
     fetchTopics();
@@ -44,7 +42,7 @@ const ForumPage = () => {
     }
   }, [topics]);
 
-  const filterBySearchTerm = (topic: BackendTopic) => {
+  const filterBySearchTerm = (topic: Topic) => {
     const term = searchTerm.toLowerCase();
     return (
       topic.Title.toLowerCase().includes(term) ||
@@ -62,7 +60,7 @@ const ForumPage = () => {
 
   const handleCreateSubmit = async (title: string, description: string) => {
     const createdTopic = await topicCreate(title, description);
-    const newTopic: BackendTopic = {
+    const newTopic: Topic = {
       ID: -1, 
       Title: createdTopic[0],
       Description: createdTopic[1],
@@ -87,10 +85,17 @@ const ForumPage = () => {
     );
   };
 
-  const handleOpenEdit = () => {
-    setEditOpen(true);
-  };
+  const handleUpdateTopic = async (id: number, newTitle: string , newDescription: string) => {
+    setLocalTopics(prev => 
+      prev.map(t => 
+        t.ID === id ? {...t, Title: newTitle, Description: newDescription} : t
+      )
+    )
+  }
 
+  const handleDeleteTopic = async(id: number) => {
+    setLocalTopics(localTopics.filter(t => t.ID !== id))
+  }
   const pinnedEmptyMessage = searchTerm 
     ? `No pinned topics found matching "${searchTerm}"`
     : "No pinned topics yet";
@@ -163,6 +168,8 @@ const ForumPage = () => {
           topics={pinnedTopics}
           emptyMessage={pinnedEmptyMessage}
           onPin={handlePinTopic}
+          onUpdate={handleUpdateTopic}
+          onDelete = {handleDeleteTopic}
         />
 
         <Typography
@@ -176,6 +183,8 @@ const ForumPage = () => {
           topics={otherTopics}
           emptyMessage={otherEmptyMessage}
           onPin={handlePinTopic}
+          onUpdate = {handleUpdateTopic}
+          onDelete = {handleDeleteTopic}
         />
       </Container>
 
