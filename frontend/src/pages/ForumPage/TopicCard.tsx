@@ -1,12 +1,15 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState } from 'react';
 
 import { Card, CardContent, Typography, Box, Chip } from '@mui/material';
-import { LABEL_COLORS, BRAND_PRIMARY } from './forum.constants.ts';
-import { Topic } from '../../types/Forum.tsx';
-
 import PushPinIcon from '@mui/icons-material/PushPin';
 import EditIcon from '@mui/icons-material/Edit';
+
+import { LABEL_COLORS, BRAND_PRIMARY } from './forum.constants.ts';
+import { Topic } from '../../types/Forum.tsx';
 import EditCard from './EditCard.tsx';
+
+import { useNavigate } from 'react-router-dom';
+
 
 interface Props {
   topic: Topic;
@@ -15,16 +18,19 @@ interface Props {
   onDelete: (id: number) => void;
 }
 
-const TopicCard = ({ topic, onPin , onUpdate, onDelete}: Props) => {
+const TopicCard = ({ topic, onPin, onUpdate, onDelete }: Props) => {
+  const [editOpen, setEditOpen] = useState(false);
+  const navigate = useNavigate();
+
   const handlePin = () => {
     onPin(topic.ID);
   };
 
-  const [editOpen, setEditOpen] = useState<boolean>(false);
   const handleOpenEdit = () => {
     setEditOpen(true);
-  }
+  };
 
+  
 
   return (
     <Card
@@ -32,10 +38,13 @@ const TopicCard = ({ topic, onPin , onUpdate, onDelete}: Props) => {
       sx={{
         position: 'relative',
         '&:hover': {
-          borderLeft: `4px solid ${LABEL_COLORS[topic.Created ? 'created' : 'none']}`,
+          borderLeft: `4px solid ${
+            LABEL_COLORS[topic.Created ? 'created' : 'none']
+          }`,
         },
       }}
     >
+      {/* Actions */}
       <Box
         sx={{
           position: 'absolute',
@@ -47,10 +56,10 @@ const TopicCard = ({ topic, onPin , onUpdate, onDelete}: Props) => {
       >
         {topic.Created && (
           <EditIcon
-            onClick = {handleOpenEdit}
+            onClick={handleOpenEdit}
             sx={{
-              color: LABEL_COLORS[topic.Created ? 'created' : 'none'],
-              padding: 0.2,
+              color: LABEL_COLORS.created,
+              p: 0.2,
               cursor: 'pointer',
               '&:hover': {
                 backgroundColor: '#efd5cdff',
@@ -59,6 +68,7 @@ const TopicCard = ({ topic, onPin , onUpdate, onDelete}: Props) => {
             }}
           />
         )}
+
         <PushPinIcon
           onClick={handlePin}
           sx={{
@@ -74,6 +84,7 @@ const TopicCard = ({ topic, onPin , onUpdate, onDelete}: Props) => {
         />
       </Box>
 
+      {/* Content */}
       <CardContent
         sx={{
           py: 3,
@@ -81,6 +92,7 @@ const TopicCard = ({ topic, onPin , onUpdate, onDelete}: Props) => {
           justifyContent: 'space-between',
           alignItems: 'center',
         }}
+        onClick = {() => navigate(`/topic/${topic.Title.replaceAll(' ', '_')}`)}
       >
         <Box>
           <Typography variant="h6">{topic.Title}</Typography>
@@ -88,11 +100,12 @@ const TopicCard = ({ topic, onPin , onUpdate, onDelete}: Props) => {
             {topic.Description}
           </Typography>
         </Box>
+
         {topic.Created && (
           <Chip
             label="created"
             sx={{
-              color: LABEL_COLORS['created'],
+              color: LABEL_COLORS.created,
               fontWeight: 'bold',
               textTransform: 'capitalize',
               minWidth: '80px',
@@ -101,14 +114,14 @@ const TopicCard = ({ topic, onPin , onUpdate, onDelete}: Props) => {
         )}
       </CardContent>
 
+      {/* Edit Dialog */}
       <EditCard
-        open = {editOpen}
+        open={editOpen}
         onClose={() => setEditOpen(false)}
-        topicID = {topic.ID}
-        onUpdate = {onUpdate}
-        onDelete = {onDelete}
+        topicID={topic.ID}
+        onUpdate={onUpdate}
+        onDelete={onDelete}
       />
-      
     </Card>
   );
 };

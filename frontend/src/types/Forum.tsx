@@ -1,10 +1,3 @@
-// export interface Topic {
-//   ID: number;
-//   Title: string;
-//   Description: string;
-//   Label: 'created' | 'none';
-// }
-
 export interface Topic {
   ID: number;
   Title: string;

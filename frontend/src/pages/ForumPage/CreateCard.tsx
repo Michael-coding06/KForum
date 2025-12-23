@@ -10,7 +10,7 @@ import {
   IconButton,
 } from '@mui/material';
 import { X } from 'lucide-react';
-import { BRAND_PRIMARY, BRAND_PRIMARY_HOVER } from './forum.constants.ts';
+import { BRAND_PRIMARY, BRAND_PRIMARY_HOVER, TEXT_FIELD_STYLES } from './forum.constants.ts';
 
 interface CreateCardProps {
   open: boolean;
@@ -19,8 +19,10 @@ interface CreateCardProps {
 }
 
 const CreateCard = ({ open, onClose, onSubmit }: CreateCardProps) => {
-  const [title, setTitle] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+
+  const isFormValid = Boolean(title.trim() && description.trim());
 
   const resetForm = () => {
     setTitle('');
@@ -38,18 +40,6 @@ const CreateCard = ({ open, onClose, onSubmit }: CreateCardProps) => {
     resetForm();
   };
 
-  const isFormValid = Boolean(title.trim() && description.trim());
-
-  const textFieldStyles = {
-    '& .MuiOutlinedInput-root': {
-      '&:hover fieldset': { borderColor: BRAND_PRIMARY },
-      '&.Mui-focused fieldset': { borderColor: BRAND_PRIMARY },
-    },
-    '& .MuiInputLabel-root.Mui-focused': {
-      color: BRAND_PRIMARY,
-    },
-  };
-
   return (
     <Dialog
       open={open}
@@ -64,12 +54,9 @@ const CreateCard = ({ open, onClose, onSubmit }: CreateCardProps) => {
       }}
     >
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <DialogTitle
-          sx={{ fontWeight: 'bold', color: BRAND_PRIMARY, fontSize: '1.5rem' }}
-        >
+        <DialogTitle sx={{ fontWeight: 'bold', color: BRAND_PRIMARY, fontSize: '1.5rem' }}>
           Create New Topic
         </DialogTitle>
-
         <IconButton onClick={handleClose} sx={{ mr: 2 }}>
           <X size={24} color={BRAND_PRIMARY} />
         </IconButton>
@@ -84,9 +71,8 @@ const CreateCard = ({ open, onClose, onSubmit }: CreateCardProps) => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter topic title..."
-            sx={textFieldStyles}
+            sx={TEXT_FIELD_STYLES}
           />
-
           <TextField
             label="Description"
             required
@@ -96,7 +82,7 @@ const CreateCard = ({ open, onClose, onSubmit }: CreateCardProps) => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Enter topic description..."
-            sx={textFieldStyles}
+            sx={TEXT_FIELD_STYLES}
           />
         </Box>
       </DialogContent>
@@ -112,7 +98,6 @@ const CreateCard = ({ open, onClose, onSubmit }: CreateCardProps) => {
         >
           Cancel
         </Button>
-
         <Button
           onClick={handleSubmit}
           variant="contained"

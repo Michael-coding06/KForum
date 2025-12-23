@@ -10,7 +10,13 @@ import {
   IconButton,
 } from '@mui/material';
 import { X } from 'lucide-react';
-import { BRAND_PRIMARY, BRAND_PRIMARY_HOVER } from './forum.constants.ts';
+
+import {
+  BRAND_PRIMARY,
+  TEXT_FIELD_STYLES,
+  PRIMARY_BUTTON_STYLES,
+} from './forum.constants.ts';
+
 import useUpdateTopic from '../../hooks/topic/useUpdateTopic.tsx';
 import useDeleteTopic from '../../hooks/topic/useDeleteTopic.tsx';
 
@@ -22,42 +28,43 @@ interface EditCardProps {
   onDelete: (id: number) => void;
 }
 
-const EditCard = ({ open, onClose, topicID, onUpdate, onDelete}: EditCardProps) => {
+const EditCard = ({
+  open,
+  onClose,
+  topicID,
+  onUpdate,
+  onDelete,
+}: EditCardProps) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const {topicUpdate} = useUpdateTopic();
-  const {topicDelete} = useDeleteTopic();
 
-  const isFormValid = Boolean(title.trim() && description.trim());
+  const { topicUpdate } = useUpdateTopic();
+  const { topicDelete } = useDeleteTopic();
 
-  const handleClose = () => {
+  const isFormValid = title.trim() !== '' && description.trim() !== '';
+
+  const resetForm = () => {
     setTitle('');
     setDescription('');
+  };
+
+  const handleClose = () => {
+    resetForm();
     onClose();
   };
 
   const handleSubmit = async () => {
     if (!isFormValid) return;
-    await topicUpdate(topicID, title, description)
-    // console.log(topicID, title, description)
-    onUpdate(topicID, title, description)
+
+    await topicUpdate(topicID, title, description);
+    onUpdate(topicID, title, description);
     handleClose();
   };
 
   const handleDelete = async () => {
     await topicDelete(topicID);
-    onDelete(topicID)
+    onDelete(topicID);
     handleClose();
-  }
- 
-  const textFieldStyles = {
-    '& .MuiOutlinedInput-root': {
-      '&:hover fieldset': { borderColor: BRAND_PRIMARY },
-      '&.Mui-focused fieldset': { borderColor: BRAND_PRIMARY },
-    },
-    '& .MuiInputLabel-root.Mui-focused': {
-      color: BRAND_PRIMARY,
-    },
   };
 
   return (
@@ -101,11 +108,10 @@ const EditCard = ({ open, onClose, topicID, onUpdate, onDelete}: EditCardProps) 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <TextField
             label="New Title"
-            // size="small"
             fullWidth
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            sx={textFieldStyles}
+            sx={TEXT_FIELD_STYLES}
           />
 
           <TextField
@@ -116,7 +122,7 @@ const EditCard = ({ open, onClose, topicID, onUpdate, onDelete}: EditCardProps) 
             fullWidth
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            sx={textFieldStyles}
+            sx={TEXT_FIELD_STYLES}
           />
         </Box>
       </DialogContent>
@@ -143,19 +149,14 @@ const EditCard = ({ open, onClose, topicID, onUpdate, onDelete}: EditCardProps) 
         >
           Delete
         </Button>
+
         <Button
           onClick={handleSubmit}
-          variant='contained'
+          variant="contained"
           disabled={!isFormValid}
           sx={{
-            textTransform: 'none',
+            ...PRIMARY_BUTTON_STYLES,
             fontWeight: 600,
-            px: 3,
-            borderRadius: '10px',
-            bgcolor: BRAND_PRIMARY,
-            // color: '#fff',
-            '&:hover': { bgcolor: BRAND_PRIMARY_HOVER },
-            '&:disabled': { bgcolor: 'rgba(95, 90, 71, 0.3)' },
           }}
         >
           Save

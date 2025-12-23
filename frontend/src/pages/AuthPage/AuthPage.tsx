@@ -13,7 +13,7 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import useSignUp from "../../hooks/auth/useSignUp.tsx"
 
-import "../Page.css";
+// import "../Page.css";
 import useLogIn from "../../hooks/auth/useLogIn.tsx";
 const PRIMARY_COLOR = "#5f5a47";
 
