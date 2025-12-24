@@ -15,9 +15,10 @@ interface HeaderProps {
   username: string;
   searchTerm: string;
   onSearchChange: (value: string) => void;
+  pageType: string;
 }
 
-const Header = ({ username, searchTerm, onSearchChange }: HeaderProps) => {
+const Header = ({ username, searchTerm, onSearchChange, pageType }: HeaderProps) => {
   return (
     <AppBar sx={{ bgcolor: BRAND_PRIMARY }}>
       <Toolbar>
@@ -29,7 +30,7 @@ const Header = ({ username, searchTerm, onSearchChange }: HeaderProps) => {
 
         <Box sx={{ marginLeft: 'auto' }}>
           <TextField
-            placeholder="Search topics..."
+            placeholder= {`Search ${pageType}...`}
             className="search"
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}

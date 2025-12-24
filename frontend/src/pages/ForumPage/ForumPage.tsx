@@ -32,7 +32,7 @@ const ForumPage = () => {
   const { topicPin } = usePinTopic();
 
   const [localTopics, setLocalTopics] = useState<Topic[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -128,6 +128,7 @@ const ForumPage = () => {
         username={username}
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
+        pageType='topic'
       />
 
       {/* Content */}

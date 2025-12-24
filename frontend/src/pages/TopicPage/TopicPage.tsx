@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { Box, Container, Typography, Button } from '@mui/material';
 import { useOutletContext, useParams } from 'react-router-dom';
 import Header from '../Header.tsx';
@@ -83,13 +83,29 @@ const TopicPage = () => {
     );
   };
 
+  const matchesSearch = useCallback(
+    (post: Post) => {
+      const term = searchTerm.toLowerCase();
+      return (
+        post.Title.toLowerCase().includes(term) ||
+        post.Details.toLowerCase().includes(term)
+      );
+    },
+    [searchTerm]
+  );
 
+  const displayedPosts = useMemo(
+    () => localPosts.filter(p => matchesSearch(p)),
+    [localPosts, matchesSearch]
+  )
+  
   return (
     <Box sx={{ minHeight: '100vh' }} className="forum">
       <Header 
         username={username}
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
+        pageType='post'
       />
 
       <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -125,7 +141,7 @@ const TopicPage = () => {
         </Box>
 
         <PostList 
-          posts={localPosts} 
+          posts={displayedPosts} 
           onLike = {handleToggleLike}
         />
         <CreateCard
