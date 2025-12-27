@@ -5,6 +5,8 @@ export interface Post {
   Details: string;
   NoLikes: number;
   NoComments: number;
+  Edited: boolean;
+  EditedAt: string | null;
   Liked: boolean;
   CreatedBy: string;
 }

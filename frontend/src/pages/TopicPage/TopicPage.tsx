@@ -11,6 +11,8 @@ import useCreatePost from '../../hooks/post/useCreatePost.tsx';
 import useFetchPost from '../../hooks/post/useFetchPost.tsx';
 import useLikePost from '../../hooks/post/useLikePost.tsx';
 
+// import appEmitter from '../../utils/emitter.tsx';
+
 const TopicPage = () => {
   const { username } = useOutletContext<{ username: string }>();
   const {topic} = useParams<string>();
@@ -32,8 +34,6 @@ const TopicPage = () => {
     }
   }, [])
 
-  // console.log(posts)
-
   useEffect(() => {
     setLocalPosts(posts
     ? posts.map(post => ({
@@ -42,13 +42,13 @@ const TopicPage = () => {
         Details: post.Details,
         NoLikes: post.NoLikes,
         NoComments: 0,
+        Edited: post.Edited,
+        EditedAt: post.EditedAt,
         Liked: post.Liked,
         CreatedBy: post.CreatedBy,
       }))
     : []);
   }, [posts])
-
-  // console.log(localPosts)
 
   const handleCreateSubmit = async (title: string, details: string) => {
     if (topicTitle) {
@@ -59,6 +59,8 @@ const TopicPage = () => {
         Details: data[1],
         NoLikes: 0,
         NoComments: 0,
+        Edited: false,
+        EditedAt: null,
         Liked: false, 
         CreatedBy: username,
       };
@@ -99,6 +101,7 @@ const TopicPage = () => {
     [localPosts, matchesSearch]
   )
   
+  // console.log(displayedPosts)
   return (
     <Box sx={{ minHeight: '100vh' }} className="forum">
       <Header 
@@ -142,7 +145,8 @@ const TopicPage = () => {
 
         <PostList 
           posts={displayedPosts} 
-          onLike = {handleToggleLike}
+          onLike={handleToggleLike}
+          username={username}
         />
         <CreateCard
           open={createDialogOpen}

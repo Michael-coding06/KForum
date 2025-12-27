@@ -4,7 +4,10 @@ CREATE TABLE posts (
     title VARCHAR(255) NOT NULL,
     details TEXT NOT NULL,
     created_by INTEGER NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    edited BOOLEAN NOT NULL DEFAULT FALSE,
+    edited_at TIMESTAMPTZ,
 
     CONSTRAINT fk_posts_created_by
         FOREIGN KEY (created_by)
@@ -16,6 +19,7 @@ CREATE TABLE posts (
         REFERENCES topics(id)
         ON DELETE CASCADE
 );
+
 
 CREATE TABLE post_likes (
     id SERIAL PRIMARY KEY,

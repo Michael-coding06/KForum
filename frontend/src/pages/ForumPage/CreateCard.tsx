@@ -19,10 +19,12 @@ interface CreateCardProps {
 }
 
 const CreateCard = ({ open, onClose, onSubmit }: CreateCardProps) => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
 
   const isFormValid = Boolean(title.trim() && description.trim());
+  const isValidTitle = (value: string) => /^[a-zA-Z0-9]*$/.test(value);
+
 
   const resetForm = () => {
     setTitle('');
@@ -69,10 +71,18 @@ const CreateCard = ({ open, onClose, onSubmit }: CreateCardProps) => {
             required
             fullWidth
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (isValidTitle(value)) {
+                setTitle(value);
+              }
+            }}
             placeholder="Enter topic title..."
             sx={TEXT_FIELD_STYLES}
+            helperText="Only letters, numbers, spacesa are allowed"
+            error={title.length > 0 && !isValidTitle(title)}
           />
+
           <TextField
             label="Description"
             required

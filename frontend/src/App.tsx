@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import AuthPage from "./pages/AuthPage/AuthPage.tsx";
 import ForumPage from "./pages/ForumPage/ForumPage.tsx";
 import TopicPage from "./pages/TopicPage/TopicPage.tsx"
+import PostPage from "./pages/PostPage/PostPage.tsx";
 
 import ProtectedRoutes from "./utils/ProtectedRoutes.tsx";
 
@@ -12,6 +13,7 @@ function App() {
         <Route path="/auth" element={<AuthPage />} />
         <Route element = {<ProtectedRoutes/>}>
           <Route path="/topic/:topic" element={<TopicPage/>}></Route>
+          <Route path="/post/:post" element={<PostPage/>}></Route>
           <Route path="/" element={<ForumPage />} />
         </Route>
       </Routes>

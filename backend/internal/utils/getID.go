@@ -24,3 +24,13 @@ func GetTopicID(ctx context.Context, db *sql.DB, title string) (int, error) {
 	err := db.QueryRowContext(ctx, query, title).Scan(&id)
 	return id, err
 }
+
+func GetPostID(ctx context.Context, db *sql.DB, title string) (int, error) {
+	const query = `
+		SELECT id FROM posts WHERE title = $1;
+	`
+
+	var id int
+	err := db.QueryRowContext(ctx, query, title).Scan(&id)
+	return id, err
+}

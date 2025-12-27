@@ -61,6 +61,8 @@ func FetchPost(username string, topicTitle string) ([]models.PostReturn, error) 
 			p.title,
 			p.details, 
 			u.username,
+			p.edited, 
+			p.edited_at,
 			COUNT(pl.id) AS like_count,
 			CASE
 				WHEN EXISTS (
@@ -74,7 +76,7 @@ func FetchPost(username string, topicTitle string) ([]models.PostReturn, error) 
 		JOIN users u ON p.created_by = u.id
 		LEFT JOIN post_likes pl ON p.id = pl.post_id
 		WHERE p.topic_id = $2
-		GROUP BY p.id, p.title, p.details, u.username;
+		GROUP BY p.id, p.title, p.details, u.username, p.edited, p.edited_at;
 	`
 
 	rows, err := db.QueryContext(ctx, query, userID, topicID)
@@ -92,6 +94,8 @@ func FetchPost(username string, topicTitle string) ([]models.PostReturn, error) 
 			&post.Title,
 			&post.Details,
 			&post.CreatedBy,
+			&post.Edited,
+			&post.EditedAt,
 			&post.NoLikes,
 			&post.Liked,
 		); err != nil {
@@ -102,6 +106,64 @@ func FetchPost(username string, topicTitle string) ([]models.PostReturn, error) 
 	}
 
 	return posts, nil
+}
+
+func Fetch1Post(username string, postTitle string) (models.PostReturn, error) {
+	db := database.Connect()
+	defer database.Close(db)
+
+	ctx := context.Background()
+
+	postID, err := utils.GetPostID(ctx, db, postTitle)
+	if err != nil {
+		return models.PostReturn{}, err
+	}
+
+	userID, err := utils.GetUserID(ctx, db, username)
+	if err != nil {
+		return models.PostReturn{}, err
+	}
+
+	const query = `
+		SELECT 
+			p.id,
+			p.title,
+			p.details,
+			u.username,
+			p.edited, 
+			p.edited_at,
+			COUNT(pl.id) AS like_count,
+			CASE
+				WHEN EXISTS (
+					SELECT 1 
+					FROM post_likes pl2 
+					WHERE pl2.user_id = $1 AND pl2.post_id = p.id
+				) THEN TRUE
+				ELSE FALSE
+			END AS liked
+		FROM posts p
+		JOIN users u ON p.created_by = u.id
+		LEFT JOIN post_likes pl ON p.id = pl.post_id
+		WHERE p.id = $2
+		GROUP BY p.id, p.title, p.details, u.username, p.edited, p.edited_at;
+	`
+
+	var post models.PostReturn
+	err = db.QueryRowContext(ctx, query, userID, postID).Scan(
+		&post.ID,
+		&post.Title,
+		&post.Details,
+		&post.CreatedBy,
+		&post.Edited,
+		&post.EditedAt,
+		&post.NoLikes,
+		&post.Liked,
+	)
+	if err != nil {
+		return models.PostReturn{}, err
+	}
+
+	return post, nil
 }
 
 func LikePost(postTitle string, username string) (int, error) {
@@ -171,4 +233,33 @@ func LikePost(postTitle string, username string) (int, error) {
 	`
 	err = db.QueryRowContext(ctx, queryNoLike, postID).Scan(&noLike)
 	return noLike, err
+}
+
+func UpdatePost(id int, title string, details string) error {
+	db := database.Connect()
+	defer database.Close(db)
+
+	ctx := context.Background()
+
+	query := `
+		UPDATE posts
+		SET title = $1, details = $2, edited = TRUE, edited_at = NOW()
+		WHERE id = $3
+	`
+
+	_, err := db.ExecContext(ctx, query, title, details, id)
+	return err
+}
+
+func DeletePost(id int) error {
+	db := database.Connect()
+	defer database.Close(db)
+
+	ctx := context.Background()
+
+	query := `
+		DELETE FROM posts WHERE id = $1;
+	`
+	_, err := db.ExecContext(ctx, query, id)
+	return err
 }
