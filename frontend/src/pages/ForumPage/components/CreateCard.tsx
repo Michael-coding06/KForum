@@ -10,7 +10,7 @@ import {
   IconButton,
 } from '@mui/material';
 import { X } from 'lucide-react';
-import { BRAND_PRIMARY, BRAND_PRIMARY_HOVER, TEXT_FIELD_STYLES } from '../../forum.constants.ts';
+import { BRAND_PRIMARY, BRAND_PRIMARY_HOVER, TEXT_FIELD_STYLES } from '../../components/forum.constants.ts';
 
 interface CreateCardProps {
   open: boolean;

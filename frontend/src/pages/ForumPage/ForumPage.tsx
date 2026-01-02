@@ -8,13 +8,12 @@ import {
 import { useOutletContext } from 'react-router-dom';
 
 import TopicList from './components/TopicList.tsx';
-// import TopicCard from '../TopicCard.tsx';
-import Header from '../Header.tsx';
+import Header from '../components/Header.tsx';
 import CreateCard from './components/CreateCard.tsx';
+import { useForumManager } from '../../hooks/manager/useForumManager.ts';
 
-import { useForumManager } from './useForumManager.ts';
-
-import { BRAND_PRIMARY, PRIMARY_BUTTON_STYLES } from '../forum.constants.ts';
+import { BRAND_PRIMARY, PRIMARY_BUTTON_STYLES } from '../components/forum.constants.ts';
+import '../Page.css'
 
 const ForumPage = () => {
   const { username } = useOutletContext<{ username: string }>();

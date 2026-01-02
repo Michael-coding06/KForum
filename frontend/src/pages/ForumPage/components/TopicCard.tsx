@@ -1,10 +1,17 @@
 import { useState } from 'react';
 
-import { Card, CardContent, Typography, Box, Chip } from '@mui/material';
+import { 
+  Card, 
+  CardContent, 
+  Typography, 
+  Box, 
+  Chip 
+} from '@mui/material';
+
 import PushPinIcon from '@mui/icons-material/PushPin';
 import EditIcon from '@mui/icons-material/Edit';
 
-import { LABEL_COLORS, BRAND_PRIMARY } from '../../forum.constants.ts';
+import { LABEL_COLORS, BRAND_PRIMARY } from '../../components/forum.constants.ts';
 import { Topic } from '../../../types/Forum.tsx';
 import EditCard from './EditCard.tsx';
 

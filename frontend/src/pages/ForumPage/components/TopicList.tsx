@@ -1,7 +1,10 @@
-import { Box, Typography } from '@mui/material';
+import { 
+  Box, 
+  Typography 
+} from '@mui/material';
 import TopicCard from './TopicCard.tsx';
 import { Topic } from '../../../types/Forum.tsx';
-import { BRAND_PRIMARY } from '../../forum.constants.ts';
+import { BRAND_PRIMARY } from '../../components/forum.constants.ts';
 
 interface Props {
   topics: Topic[];

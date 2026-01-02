@@ -18,7 +18,7 @@ func setUpRoutes(r *gin.Engine) {
 		AllowOrigins: []string{
 			"http://localhost:3000",
 			"http://localhost:3001",
-		},
+		}, // will fix to IP Address in final submission
 		AllowMethods:     []string{"POST", "GET", "OPTIONS", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type"},
 		AllowCredentials: true,

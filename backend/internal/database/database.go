@@ -3,16 +3,17 @@ package database
 import (
 	"database/sql"
 	"log"
-	"os"
 
 	_ "github.com/lib/pq"
 )
 
 func Connect() *sql.DB {
-	connStr := os.Getenv("DATABASE_URL")
-	log.Println("Connecting to database with:", connStr)
+	// connStr := os.Getenv("DATABASE_URL")
+	// conStr := config.ConnectionString
+	conStr := "host=localhost port=5432 user=forum_user password=aohk.kvt.2081 dbname=forum_db sslmode=disable"
+	log.Println("Connecting to database with:", conStr)
 
-	db, err := sql.Open("postgres", connStr)
+	db, err := sql.Open("postgres", conStr)
 	if err != nil {
 		log.Fatal(err)
 	}

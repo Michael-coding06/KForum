@@ -11,10 +11,10 @@ import {
   InputAdornment,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import useSignUp from "../../hooks/auth/useSignUp.tsx"
+import useSignUp from "../../hooks/api/auth/useSignUp.tsx"
 
 // import "../Page.css";
-import useLogIn from "../../hooks/auth/useLogIn.tsx";
+import useLogIn from "../../hooks/api/auth/useLogIn.tsx";
 const PRIMARY_COLOR = "#5f5a47";
 
 const AuthPage = () => {
