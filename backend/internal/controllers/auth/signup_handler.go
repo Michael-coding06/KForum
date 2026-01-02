@@ -47,7 +47,7 @@ func (c *Controller) SignUp(ctx *gin.Context) {
 		10*24*60*60, //10 days
 		"/",
 		config.CookieDomain,
-		true,
+		false,
 		true, //HttpOnly
 	)
 

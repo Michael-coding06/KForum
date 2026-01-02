@@ -30,7 +30,7 @@ func (c *Controller) LogIn(ctx *gin.Context) {
 		10*24*60*60, //10 days
 		"/",
 		config.CookieDomain,
-		true,
+		false,
 		true, //HttpOnly
 	)
 	ctx.JSON(http.StatusOK, gin.H{"message": "Logged in successfully"})
