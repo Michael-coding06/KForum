@@ -23,6 +23,3 @@
 /frontend/yarn-error.log*
 
 /backend/.env
-
-go.mod 
-go.sum
