@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"backend/internal/config"
 	dataAuth "backend/internal/dataaccess"
 	models "backend/internal/models"
 	"net/http"
@@ -29,7 +28,7 @@ func (c *Controller) LogIn(ctx *gin.Context) {
 		issuedJWT,
 		10*24*60*60, //10 days
 		"/",
-		config.CookieDomain,
+		"3.27.131.69",
 		false,
 		true, //HttpOnly
 	)

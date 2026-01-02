@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"backend/internal/config"
 	dataAuth "backend/internal/dataaccess"
 	models "backend/internal/models"
 	utilsAuth "backend/internal/utils/auth"
@@ -44,11 +43,11 @@ func (c *Controller) SignUp(ctx *gin.Context) {
 	ctx.SetCookie(
 		"auth_token",
 		issuedJWT,
-		10*24*60*60, //10 days
+		10*24*60*60,
 		"/",
-		config.CookieDomain,
-		false,
-		true, //HttpOnly
+		"3.27.131.69", // or ""
+		false,         // Secure MUST be false on HTTP
+		true,
 	)
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "JWT in Cookie successfully"})
