@@ -12,20 +12,19 @@ import { timeAgo } from '../../../utils/TimeAgo.tsx';
 
 interface PostCardProps {
   post: Post;
-  onLike: (postId: number) => void;
+  onReact: (postID: number, typeReact: number) => void;
   username: string;
 }
 
-const PostCard = ({ post, onLike }: PostCardProps) => {
+const PostCard = ({ post, onReact }: PostCardProps) => {
   const navigate = useNavigate();
 
-  const handleLike = () => onLike(post.ID);
+  const handleLike = () => onReact(post.ID, 1);
+  const handleDislike = () => onReact(post.ID, -1);
 
   const handleNavigate = () => {
     const postTitle = encodeURIComponent(post.Title.replaceAll(' ', '_'));
-    navigate(`/post/${postTitle}`, {
-      state: { postID: post.ID },
-    });
+    navigate(`/post/${post.ID}/${postTitle}`)
   };
 
   return (
@@ -91,8 +90,11 @@ const PostCard = ({ post, onLike }: PostCardProps) => {
         <Action
           liked={post.Liked}
           noLikes={post.NoLikes}
+          disliked={post.Disliked}
+          noDislikes={post.NoDislikes}
           noComments={post.NoComments}
           onLike={handleLike}
+          onDislike={handleDislike}
           onComment={handleNavigate}
         />
       </CardContent>

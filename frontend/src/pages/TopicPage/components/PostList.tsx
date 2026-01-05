@@ -8,10 +8,10 @@ import { BRAND_PRIMARY } from '../../components/forum.constants.ts';
 
 interface Props {
     posts: Post[]
-    onLike: (postId: number) => void;
+    onReact: (postId: number, typeReact: number) => void;
     username: string
 }
-const PostList = ({posts, onLike, username}: Props) => {
+const PostList = ({posts, onReact, username}: Props) => {
     return (
         <Box sx={{ flex: '1' }}>
             {posts.length === 0 ? (
@@ -27,7 +27,7 @@ const PostList = ({posts, onLike, username}: Props) => {
             </Typography>
             ) : (
             posts.map(post => (
-                <PostCard key={post.ID} post={post} onLike={onLike} username={username}/>
+                <PostCard key={post.ID} post={post} onReact = {onReact} username={username}/>
             ))
             )}
         </Box>

@@ -99,7 +99,7 @@ const TopicCard = ({ topic, onPin, onUpdate, onDelete }: Props) => {
           justifyContent: 'space-between',
           alignItems: 'center',
         }}
-        onClick = {() => navigate(`/topic/${topic.Title.replaceAll(' ', '_')}`)}
+        onClick = {() => navigate(`/topic/${topic.ID}/${topic.Title.replaceAll(' ', '_')}`)}
       >
         <Box>
           <Typography variant="h6">{topic.Title}</Typography>

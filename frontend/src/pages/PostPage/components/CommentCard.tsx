@@ -15,15 +15,15 @@ import { useCommentManager } from '../../../hooks/manager/useCommentManager.ts';
 
 interface CommentCardProps {
   comment: Comment;
-  onLike: (ID: number) => void;
+  onReact: (ID: number, typeReact: number) => void;
   onReply: (commentID: number, reply: string) => Promise<ReplyReturn>;
   onSave: (ID: number, newComment: string) => void;
   onDelete: (commentID: number) => void;
 }
 
-const CommentCard = ({ comment, onLike, onReply, onSave, onDelete }: CommentCardProps) => {
+const CommentCard = ({ comment, onReact, onReply, onSave, onDelete }: CommentCardProps) => {
   const { username } = useOutletContext<{ username: string }>();
-
+  
   const {
     editDialogOpen,
     showReplyInput,
@@ -34,12 +34,15 @@ const CommentCard = ({ comment, onLike, onReply, onSave, onDelete }: CommentCard
     handleEditDialogClose,
     handleUpdate,
     handleLike,
+    handleDislike,
     handleToggleReplyInput,
     handleToggleReplies,
     handleReply,
-    handleToggleLikeReply,
+    handleToggleReactReply,
     handleDeleteReply,
-  } = useCommentManager({comment, username, onLike, onReply, onSave});
+  } = useCommentManager({comment, username, onReact, onReply, onSave});
+
+  console.log("This is the local replies: ",localReplies)
 
   return (
     <Box>
@@ -110,9 +113,13 @@ const CommentCard = ({ comment, onLike, onReply, onSave, onDelete }: CommentCard
           }}
         >
           <Action
-            liked={comment.Liked ?? false}
+            liked={comment.Liked}
+            disliked={comment.Disliked}
             noLikes={comment.NoLikes ?? 0}
+            noDislikes={comment.NoDislikes ?? 0}
+            noComments={null}
             onLike={handleLike}
+            onDislike={handleDislike}
             onComment={handleToggleReplyInput}
           />
           {localReplies.length > 0 && (
@@ -153,7 +160,7 @@ const CommentCard = ({ comment, onLike, onReply, onSave, onDelete }: CommentCard
               comment={reply}
               onSave={onSave}
               onDelete={handleDeleteReply}
-              onLike={handleToggleLikeReply}
+              onReact={handleToggleReactReply}
               onReply={onReply}
             />
           </Box>

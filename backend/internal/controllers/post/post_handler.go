@@ -4,6 +4,7 @@ import (
 	dataaccess "backend/internal/dataaccess"
 	"backend/internal/models"
 	"backend/internal/utils"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -22,7 +23,7 @@ func (c *Controller) Create(ctx *gin.Context) {
 		return
 	}
 
-	if err := dataaccess.CreatePost(req.Title, req.Details, req.Topic, username); err != nil {
+	if err := dataaccess.CreatePost(req.Title, req.Details, req.TopicID, username); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -36,8 +37,15 @@ func (c *Controller) Fetch(ctx *gin.Context) {
 		return
 	}
 
-	topicTitle := ctx.Param("topicTitle")
-	posts, err := dataaccess.FetchPost(username, topicTitle)
+	topicIDStr := ctx.Param("topicID")
+
+	topicID, err := strconv.Atoi(topicIDStr)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid topicID"})
+		return
+	}
+
+	posts, err := dataaccess.FetchPost(username, topicID)
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch posts"})
@@ -45,6 +53,39 @@ func (c *Controller) Fetch(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, posts)
+}
+
+func (c *Controller) React(ctx *gin.Context) {
+	username, ok := utils.GetUsername(ctx)
+	if !ok {
+		return
+	}
+
+	postIDString := ctx.Param("postID")
+
+	postID, err := strconv.Atoi(postIDString)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
+		return
+	}
+
+	var req models.PostReaction
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	NoDislikes, NoLikes, err := dataaccess.ReactPost(req.Reaction, postID, username)
+	fmt.Println("Number of Dislikes: ", NoDislikes)
+	fmt.Println("Number of Likes: ", NoLikes)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"NoReactions": []int{NoDislikes, NoLikes}})
 }
 
 func (c *Controller) Fetch1(ctx *gin.Context) {
@@ -70,26 +111,29 @@ func (c *Controller) Fetch1(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, post)
 }
 
-func (c *Controller) Like(ctx *gin.Context) {
-	var req models.PostLike
+// HAVE TO FIX
+// func (c *Controller) Like(ctx *gin.Context) {
+// 	var req models.PostReaction
 
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
-		return
-	}
-	username, ok := utils.GetUsername(ctx)
-	if !ok {
-		return
-	}
-	number, err := dataaccess.LikePost(req.Title, username)
+// 	if err := ctx.ShouldBindJSON(&req); err != nil {
+// 		fmt.Print(req.Reaction)
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+// 		return
+// 	}
 
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+// 	username, ok := utils.GetUsername(ctx)
+// 	if !ok {
+// 		return
+// 	}
+// 	number, err := dataaccess.LikePost(req.Reaction, username)
 
-	ctx.JSON(http.StatusOK, gin.H{"NoLikes": []int{number}})
-}
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+
+// 	ctx.JSON(http.StatusOK, gin.H{"NoLikes": []int{number}})
+// }
 
 func (c *Controller) Update(ctx *gin.Context) {
 	id, ok := utils.GetIDParam(ctx)

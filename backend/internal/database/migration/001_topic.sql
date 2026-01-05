@@ -38,5 +38,3 @@ CREATE TABLE IF NOT EXISTS topic_pins (
     -- prevents a user from pinning the same topic multiple times
     CONSTRAINT unique_user_topic_pin UNIQUE (user_id, topic_id)
 );
-
-

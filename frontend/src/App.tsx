@@ -12,8 +12,8 @@ function App() {
       <Routes>
         <Route path="/auth" element={<AuthPage />} />
         <Route element = {<ProtectedRoutes/>}>
-          <Route path="/topic/:topic" element={<TopicPage/>}></Route>
-          <Route path="/post/:post" element={<PostPage/>}></Route>
+          <Route path="/topic/:topicID/:topicTitle" element={<TopicPage/>}></Route>
+          <Route path="/post/:postID/:postTitle" element={<PostPage/>}></Route>
           <Route path="/" element={<ForumPage />} />
         </Route>
       </Routes>

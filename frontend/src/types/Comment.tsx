@@ -7,9 +7,11 @@ export interface Comment {
   Edited: boolean;
   EditedAt: string | null;
 
-  Liked?: boolean;
+  Liked: boolean;
+  Disliked: boolean;
   NoLikes: number;
-  NoComments?: number;
+  NoDislikes: number;
+  NoComments: number;
   ParentComment: number | null;
 }
 

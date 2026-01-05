@@ -49,7 +49,7 @@ export const useForumManager = () => {
         await topicCreate(title, description);
         
         const newTopic: Topic = {
-            ID: -1,
+            ID: Date.now(),
             Title: title,
             Description: description,
             Pinned: false,

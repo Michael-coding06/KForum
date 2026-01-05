@@ -8,12 +8,14 @@ const useFetchPost = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchPosts = useCallback(async(topicTitle: string) => {
+    const fetchPosts = useCallback(async(topicID: number) => {
         setLoading(true);
         setError(null);
 
         try {
-            const res = await api.get<Post[]>(`/post/fetch/${topicTitle}`);
+            console.log(topicID)
+            const res = await api.get<Post[]>(`/post/fetch/${topicID}`);
+            console.log(res.data)
             setPosts(res.data)
         } catch (error) {
             if (axios.isAxiosError(error)) {

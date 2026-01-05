@@ -95,28 +95,34 @@ func (c *Controller) Delete(ctx *gin.Context) {
 	}
 }
 
-func (c *Controller) Like(ctx *gin.Context) {
+func (c *Controller) React(ctx *gin.Context) {
+	username, ok := utils.GetUsername(ctx)
+	if !ok {
+		return
+	}
 
 	commentIDString := ctx.Param("commentID")
+
 	commentID, err := strconv.Atoi(commentIDString)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
 		return
 	}
 
-	username, ok := utils.GetUsername(ctx)
-	if !ok {
+	var req models.CommentReaction
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
 
-	number, err := dataComment.LikeComment(commentID, username)
+	NoDislikes, NoLikes, err := dataComment.ReactComment(req.Reaction, commentID, username)
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"NoLikes": []int{number}})
+	ctx.JSON(http.StatusOK, gin.H{"NoReactions": []int{NoDislikes, NoLikes}})
 }
 
 func (c *Controller) Reply(ctx *gin.Context) {

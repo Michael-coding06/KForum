@@ -4,6 +4,7 @@ import (
 	"backend/internal/database"
 	"backend/internal/models"
 	"backend/internal/utils"
+	"database/sql"
 
 	"context"
 )
@@ -50,19 +51,37 @@ func FetchComment(username string, postID int) ([]models.CommentReturn, error) {
 
 			(
 				SELECT COUNT(*)
-				FROM comment_likes cl
-				WHERE cl.comment_id = c.id
+				FROM comment_reacts cr
+				WHERE cr.comment_id = c.id AND cr.reaction = 1
 			) AS like_count,
+			 
+			(
+				SELECT COUNT(*)
+				FROM comment_reacts cr
+				WHERE cr.comment_id = c.id AND cr.reaction = -1
+			) AS dislike_count,
 
 			CASE
 				WHEN EXISTS (
 					SELECT 1
-					FROM comment_likes cl2
-					WHERE cl2.user_id = $2
-					AND cl2.comment_id = c.id
+					FROM comment_reacts cr2
+					WHERE cr2.user_id = $2
+					AND cr2.comment_id = c.id
+					AND cr2.reaction = 1
 				) THEN TRUE
 				ELSE FALSE
 			END AS liked,
+
+			CASE
+				WHEN EXISTS (
+					SELECT 1
+					FROM comment_reacts cr2
+					WHERE cr2.user_id = $2
+					AND cr2.comment_id = c.id
+					AND cr2.reaction = -1
+				) THEN TRUE
+				ELSE FALSE
+			END AS disliked,
 
 			(
 				SELECT COUNT(*)
@@ -96,7 +115,9 @@ func FetchComment(username string, postID int) ([]models.CommentReturn, error) {
 			&comment.Edited,
 			&comment.EditedAt,
 			&comment.NoLikes,
+			&comment.NoDislikes,
 			&comment.Liked,
+			&comment.Disliked,
 			&comment.NoComments,
 			&comment.ParentComment,
 		); err != nil {
@@ -144,7 +165,7 @@ func DeleteComment(commentID int) error {
 	return err
 }
 
-func LikeComment(commentID int, username string) (int, error) {
+func ReactComment(newReaction int, commentID int, username string) (int, int, error) {
 	db := database.Connect()
 	defer database.Close(db)
 
@@ -152,46 +173,72 @@ func LikeComment(commentID int, username string) (int, error) {
 
 	userID, err := utils.GetUserID(ctx, db, username)
 	if err != nil {
-		return -1, err
+		return -1, -1, err
 	}
 
-	var already bool
-	const queryCheckAlreadyLiked = `
-		SELECT EXISTS (
-			SELECT 1
-			FROM comment_likes
-			WHERE user_id = $1 AND comment_id = $2
-		);
-	`
-	err = db.QueryRowContext(ctx, queryCheckAlreadyLiked, userID, commentID).Scan(&already)
-
-	const queryUnLike = `
-		DELETE FROM comment_likes
+	var currentReact int
+	const queryCheckCurrentReact = `
+		SELECT reaction FROM comment_reacts
 		WHERE user_id = $1 AND comment_id = $2;
 	`
+	err = db.QueryRow(queryCheckCurrentReact, userID, commentID).Scan(&currentReact)
 
-	const queryLike = `
-		INSERT INTO comment_likes (user_id, comment_id)
-		VALUES ($1, $2);
-	`
-	if already {
-		_, err = db.ExecContext(ctx, queryUnLike, userID, commentID)
-	} else {
-		_, err = db.ExecContext(ctx, queryLike, userID, commentID)
-	}
+	isInDB := true
 
 	if err != nil {
-		return -1, err
+		if err == sql.ErrNoRows {
+			currentReact = 0 //user has not reacted before
+			isInDB = false
+		} else {
+			return -1, -1, err
+		}
 	}
 
-	var noComments int
-	const queryNoComment = `
-		SELECT COUNT(cl.comment_id) 
-		FROM comment_likes cl
-		WHERE cl.comment_id = $1
+	var newReact int
+
+	switch {
+	case currentReact == 0: // user either has not reacted before or had neutral reaction
+		newReact = newReaction
+	case currentReact == newReaction: // user undoes their past react
+		newReact = 0
+	case currentReact != newReaction: // user switches react
+		newReact = -currentReact
+	}
+
+	const queryInsertReact = `
+		INSERT INTO comment_reacts (reaction, user_id, comment_id)
+		VALUES ($1, $2, $3);
 	`
-	err = db.QueryRowContext(ctx, queryNoComment, commentID).Scan(&noComments)
-	return noComments, err
+
+	const queryUpdateReact = `
+		UPDATE comment_reacts
+		SET reaction = $1
+		WHERE user_id = $2 AND comment_id = $3;
+	`
+
+	if isInDB {
+		_, err = db.ExecContext(ctx, queryUpdateReact, newReact, userID, commentID)
+	} else {
+		_, err = db.ExecContext(ctx, queryInsertReact, newReact, userID, commentID)
+	}
+
+	var NoDislikes int
+	const queryNoDislikes = `
+		SELECT COUNT(cr.comment_id)
+		FROM comment_reacts cr
+		WHERE reaction = -1 AND comment_id = $1;
+	`
+	err = db.QueryRowContext(ctx, queryNoDislikes, commentID).Scan(&NoDislikes)
+
+	var NoLikes int
+	const queryNoLikes = `
+		SELECT COUNT(cr.comment_id)
+		FROM comment_reacts cr
+		WHERE reaction = 1 AND comment_id = $1;
+	`
+	err = db.QueryRowContext(ctx, queryNoLikes, commentID).Scan(&NoLikes)
+
+	return NoDislikes, NoLikes, err
 }
 
 func ReplyComment(username string, commentID int, reply string, postID int) (int, error) {
@@ -242,58 +289,81 @@ func FetchReply(username string, commentID int) ([]models.CommentReturn, error) 
 
 			(
 				SELECT COUNT(*)
-				FROM comment_likes cl
-				WHERE cl.comment_id = c.id
+				FROM comment_reacts cr
+				WHERE cr.comment_id = c.id AND cr.reaction = 1
 			) AS like_count,
+
+			(
+				SELECT COUNT(*)
+				FROM comment_reacts cr
+				WHERE cr.comment_id = c.id AND cr.reaction = -1
+			) AS dislike_count,
 
 			CASE
 				WHEN EXISTS (
 					SELECT 1
-					FROM comment_likes cl2
-					WHERE cl2.user_id = $2
-					AND cl2.comment_id = c.id
+					FROM comment_reacts cr2
+					WHERE cr2.user_id = $2
+					AND cr2.comment_id = c.id
+					AND cr2.reaction = 1
 				) THEN TRUE
 				ELSE FALSE
 			END AS liked,
+
+			CASE
+				WHEN EXISTS (
+					SELECT 1
+					FROM comment_reacts cr2
+					WHERE cr2.user_id = $2
+					AND cr2.comment_id = c.id
+					AND cr2.reaction = -1
+				) THEN TRUE
+				ELSE FALSE
+			END AS disliked,
 
 			(
 				SELECT COUNT(*)
 				FROM comments c2
 				WHERE c2.parent_comment = c.id
-			) AS comment_count
-			
+			) AS reply_count,
+
+			c.parent_comment
+
 		FROM comments c
 		JOIN users u ON c.created_by = u.id
-		WHERE c.parent_comment = $1;
+		WHERE c.parent_comment = $1
+		ORDER BY c.created_at ASC;
 	`
-	rows, err := db.QueryContext(ctx, query, commentID, userID)
 
+	rows, err := db.QueryContext(ctx, query, commentID, userID)
 	if err != nil {
 		return nil, err
 	}
-
 	defer rows.Close()
 
-	var comments []models.CommentReturn
+	var replies []models.CommentReturn
 
 	for rows.Next() {
-		var comment models.CommentReturn
+		var reply models.CommentReturn
 		if err := rows.Scan(
-			&comment.ID,
-			&comment.Comment,
-			&comment.CreatedBy,
-			&comment.CreatedAt,
-			&comment.Edited,
-			&comment.EditedAt,
-			&comment.NoLikes,
-			&comment.Liked,
-			&comment.NoComments,
+			&reply.ID,
+			&reply.Comment,
+			&reply.CreatedBy,
+			&reply.CreatedAt,
+			&reply.Edited,
+			&reply.EditedAt,
+			&reply.NoLikes,
+			&reply.NoDislikes,
+			&reply.Liked,
+			&reply.Disliked,
+			&reply.NoComments,
+			&reply.ParentComment,
 		); err != nil {
 			return nil, err
 		}
 
-		comments = append(comments, comment)
+		replies = append(replies, reply)
 	}
 
-	return comments, nil
+	return replies, nil
 }

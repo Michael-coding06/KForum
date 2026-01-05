@@ -2,31 +2,32 @@ import { useState } from "react";
 import api from "../../../api/api.tsx";
 import axios from "axios";
 
-const useLikePost = () => {
+const useReactPost = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const likePost = async(postTitle: string) => {
+    const reactPost = async(postID: number, typeReact: number) => {
         setLoading(true);
         setError(null);
 
         try {
-            const res = await api.post("/post/like", {
-                postTitle: postTitle,
+            const res = await api.post(`/post/react/${postID}`, {
+                reaction: typeReact,
             });
-            return(res.data.NoLikes)
+            console.log(res.data.NoReactions)
+            return(res.data.NoReactions)
         } catch (error) {
             if (axios.isAxiosError(error)) {
-                alert(error.response?.data?.error ?? "Like failed")
+                alert(error.response?.data?.error ?? "react failed")
             } else {
-                alert("Like failed")
+                alert("react failed")
             }
         } finally {
             setLoading(false)
         }
     }
 
-    return {likePost, error, loading}
+    return {reactPost, error, loading}
 }
 
-export default useLikePost;
+export default useReactPost;

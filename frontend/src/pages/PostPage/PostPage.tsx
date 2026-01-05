@@ -7,7 +7,7 @@ import {
   Container,
   TextField,
 } from '@mui/material';
-import { useOutletContext, useNavigate, useLocation } from 'react-router-dom';
+import { useOutletContext, useNavigate, useParams } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 
 import Header from '../components/Header.tsx';
@@ -21,8 +21,10 @@ import { usePostManager } from '../../hooks/manager/usePostManager.ts';
 const PostPage = () => {
   const { username } = useOutletContext<{ username: string }>();
   const navigate = useNavigate();
-  const location = useLocation();
-  const { postID } = location.state || {};  // will change to find the ID from the URL
+  const { postID, postTitle } = useParams<{
+    postID: string,
+    postTitle: string
+  }>();
 
   const {
     localPost,
@@ -33,16 +35,16 @@ const PostPage = () => {
     setCommentText,
     editDialogOpen,
     isPostOwner,
-    handleToggleLike,
+    handleToggleReact,
     handleUpdate,
     handleEditDialogOpen,
     handleEditDialogClose,
     handleSubmitComment,
     handleUpdateComment,
     handleDeleteComment,
-    handleToggleLikeComment,
+    handleToggleReactComment,
     handleReplyComment,
-  } = usePostManager(postID, username);
+  } = usePostManager(Number(postID), username);
 
   const handleSaveUpdate = async (newTitle: string, newDetails: string) => {
     const updatedPost = await handleUpdate(newTitle, newDetails);
@@ -51,6 +53,9 @@ const PostPage = () => {
     }
     handleEditDialogClose();
   };
+
+  const handleLike = () => handleToggleReact(1);
+  const handleDislike = () => handleToggleReact(-1);
 
   if (!localPost) return <Typography>Loading post...</Typography>;
 
@@ -104,8 +109,11 @@ const PostPage = () => {
             <Action
               liked={localPost.Liked}
               noLikes={localPost.NoLikes}
+              disliked={localPost.Disliked}
+              noDislikes={localPost.NoDislikes}
               noComments={localPost.NoComments}
-              onLike={handleToggleLike}
+              onLike={handleLike}
+              onDislike={handleDislike}
             />
           </CardContent>
         </Card>
@@ -131,7 +139,7 @@ const PostPage = () => {
             },
           }}
         />
-
+        
         <Box>
           {topLevelComments.map((comment) => (
             <CommentCard
@@ -139,7 +147,7 @@ const PostPage = () => {
               comment={comment}
               onSave={handleUpdateComment}
               onDelete={handleDeleteComment}
-              onLike={handleToggleLikeComment}
+              onReact={handleToggleReactComment}
               onReply={handleReplyComment}
             />
           ))}

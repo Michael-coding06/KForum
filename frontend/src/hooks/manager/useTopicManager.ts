@@ -9,9 +9,9 @@ import { Post } from '../../types/Post.tsx';
 
 import useCreatePost from '../api/post/useCreatePost.tsx';
 import useFetchPost from '../api/post/useFetchPost.tsx';
-import useLikePost from '../api/post/useLikePost.tsx';
+import useReactPost from '../api/post/useReactPost.tsx';
 
-export const useTopicManager = (topicTitle: string | undefined, username: string) => {
+export const useTopicManager = (topicID: number | undefined, username: string) => {
     const [localPosts, setLocalPosts] = useState<Post[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
@@ -21,16 +21,15 @@ export const useTopicManager = (topicTitle: string | undefined, username: string
     const [createDetails, setCreateDetails] = useState<string>('');
 
     //-----Post states and actions-----
-
     const {posts: serverPosts, fetchPosts} = useFetchPost();
     const {postCreate} = useCreatePost();
-    const {likePost} = useLikePost();
+    const {reactPost} = useReactPost();
 
     useEffect(() => {
-        if(topicTitle) {
-            fetchPosts(topicTitle);
+        if(topicID) {
+            fetchPosts(topicID);
         }
-    }, [topicTitle]);
+    }, [topicID]);
 
     useEffect(() => {
         setLocalPosts(
@@ -40,10 +39,12 @@ export const useTopicManager = (topicTitle: string | undefined, username: string
                     Title: post.Title,
                     Details: post.Details,
                     NoLikes: post.NoLikes,
+                    NoDislikes: post.NoDislikes,
                     NoComments: post.NoComments,
                     Edited: post.Edited,
                     EditedAt: post.EditedAt,
                     Liked: post.Liked,
+                    Disliked: post.Disliked,
                     CreatedBy: post.CreatedBy,
                 }))
                 : []
@@ -88,18 +89,20 @@ export const useTopicManager = (topicTitle: string | undefined, username: string
     //-----CRUD Action------
 
     const handleCreate = async () => {
-        if (!isFormValid || !topicTitle) return;
+        if (!isFormValid || !topicID) return;
 
-        await postCreate(createTitle, createDetails, topicTitle);
+        await postCreate(createTitle, createDetails, topicID);
         const newPost: Post = {
-            ID: -1,
+            ID: Date.now(),
             Title: createTitle,
             Details: createDetails,
             NoLikes: 0,
+            NoDislikes:0,
             NoComments: 0,
             Edited: false,
             EditedAt: null,
             Liked: false,
+            Disliked: false,
             CreatedBy: username,
         };
 
@@ -108,21 +111,21 @@ export const useTopicManager = (topicTitle: string | undefined, username: string
         setCreateDialogOpen(false);
     };
 
-    const handleToggleLike = async (postID: number) => {
-        const post = localPosts.find(p => p.ID === postID);
-        if (!post) return;
-
-        const NoLikes = await likePost(post.Title);
-
-        //push the post to top
+    const handleToggleReact = async (postID: number, typeReact: number) => {
+        const NoReactions = await reactPost(postID, typeReact);
         setLocalPosts(prev => 
             prev.map(p => 
-                p.ID === postID 
-                    ? {...p, NoLikes, Liked: !p.Liked}
-                    : p
+                p.ID === postID
+                ? {...p, 
+                    NoLikes: NoReactions[1], 
+                    NoDislikes: NoReactions[0], 
+                    Disliked: (typeReact == 1) ? false : !p.Disliked, 
+                    Liked: (typeReact == -1) ? false : !p.Liked
+                }
+                : p
             )
-        );
-    };
+        )
+    }
 
     return {
         searchTerm,
@@ -145,8 +148,7 @@ export const useTopicManager = (topicTitle: string | undefined, username: string
         handleCreateDialogClose,
 
         handleCreate,
-        handleToggleLike,
-
+        // handleToggleLike,
+        handleToggleReact
     }
 }
-

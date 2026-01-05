@@ -19,13 +19,19 @@ type CommentReturn struct {
 	ID            int        `json:"ID"`
 	Comment       string     `json:"Comment"`
 	NoLikes       int        `json:"NoLikes"`
+	NoDislikes    int        `json:"NoDislikes"`
 	NoComments    int        `json:NoComments`
 	Liked         bool       `json:"Liked"`
+	Disliked      bool       `json:"Disliked"`
 	CreatedAt     *time.Time `json: CreatedAt`
 	Edited        bool       `json:"Edited"`
 	EditedAt      *time.Time `json:"EditedAt"`
 	CreatedBy     string     `json:"CreatedBy"`
 	ParentComment *int       `json:"ParentComment`
+}
+
+type CommentReaction struct {
+	Reaction int `json:"reaction" binding:"required"`
 }
 
 type ReplyReturn struct {

@@ -8,12 +8,15 @@ import {Post} from '../../types/Post.tsx';
 import {Comment, ReplyReturn} from '../../types/Comment.tsx';
 
 import useFetch1Post from '../api/post/useFetch1Post.tsx';
-import useLikePost from '../api/post/useLikePost.tsx';
+// import useLikePost from '../api/post/useLikePost.tsx';
+// import useDislikePost from '../api/post/useDislikePost.tsx';
+// C:\Users\Admin\Desktop\Projects\CVWO\frontend\src\hooks\api\post\useReactPost.tsx
+import useReactPost from '../api/post/useReactPost.tsx';
 import useUpdatePost from '../api/post/useUpdatePost.tsx';
 
 import useCreateComment from '../api/comment/userCreateComment.tsx';
 import useFetchComments from '../api/comment/useFetchComment.tsx';
-import useLikeComment from '../api/comment/useLikeComment.tsx';
+import useReactComment from '../api/comment/useReactComment.tsx';
 import useReplyComment from '../api/comment/useReplyComment.tsx';
 import useDeleteComment from '../api/comment/useDeleteComment.tsx';
 
@@ -26,13 +29,14 @@ export const usePostManager = (postID: number | undefined, username: string) => 
 
     // -----Post states and actions-----
     const { postFetch, fetch1Post } = useFetch1Post();
-    const { likePost } = useLikePost();
+    // const { likePost } = useLikePost();
+    const { reactPost } = useReactPost();
     const { postUpdate } = useUpdatePost();
 
     // -----Comment states and actions-----
     const { comments, fetchComments } = useFetchComments();
     const { commentCreate } = useCreateComment();
-    const { likeComment } = useLikeComment();
+    const { reactComment } = useReactComment();
     const { commentReply } = useReplyComment();
     const { commentDelete } = useDeleteComment();
 
@@ -71,6 +75,8 @@ export const usePostManager = (postID: number | undefined, username: string) => 
                 Edited: comment.Edited,
                 EditedAt: comment.EditedAt,
                 NoLikes: comment.NoLikes,
+                NoDislikes: comment.NoDislikes,
+                Disliked: comment.Disliked,
                 Liked: comment.Liked,
                 NoComments: comment.NoComments,
                 ParentComment: comment.ParentComment
@@ -91,16 +97,22 @@ export const usePostManager = (postID: number | undefined, username: string) => 
     }
 
     //-----Post Actions-----
-    const handleToggleLike = useCallback(async () => {
-        if (postFetch) {
-            const NoLikes = await likePost(postFetch.Title);
+    const handleToggleReact = async (typeReact: number) => {
+        if (localPost) {
+            const NoReactions = await reactPost(localPost.ID, typeReact);
+            const [NoDislikes, noLikes] = NoReactions;
             setLocalPost(prev => 
                 prev 
-                    ? {...prev, NoLikes, Liked: !prev.Liked}
+                    ? {...prev, 
+                    NoLikes: noLikes, 
+                    NoDislikes: NoDislikes, 
+                    Disliked: (typeReact == 1) ? false : !prev.Disliked, 
+                    Liked: (typeReact == -1) ? false : !prev.Liked
+                    }
                     : prev
             )
         }
-    }, [postFetch, likePost]);
+    }
 
     const handleUpdate = async (newTitle: string, newDetails: string) => {
         if (localPost) {
@@ -111,6 +123,8 @@ export const usePostManager = (postID: number | undefined, username: string) => 
                 Title: newTitle,
                 Details: newDetails,
                 NoLikes: localPost.NoLikes,
+                NoDislikes: localPost.NoComments,
+                Disliked: localPost.Disliked,
                 NoComments: localPost.NoComments,
                 Edited: true,
                 EditedAt: new Date().toISOString(),
@@ -123,9 +137,8 @@ export const usePostManager = (postID: number | undefined, username: string) => 
         return null;
     };
 
-
     //-----Comment Actions-----
-    const handleSubmitComment = useCallback(async () => {
+    const handleSubmitComment = async () => {
         if (!commentText.trim()) return;
         if (localPost) {
             await commentCreate(commentText, localPost.ID);
@@ -137,7 +150,7 @@ export const usePostManager = (postID: number | undefined, username: string) => 
             )
         }
         setCommentText('');
-    }, [commentText, localPost, commentCreate]);
+    };
 
     const handleUpdateComment = (commentID: number, udpdateComment: string) => {
         setLocalComments(prev => 
@@ -160,16 +173,21 @@ export const usePostManager = (postID: number | undefined, username: string) => 
         );
     };
 
-    const handleToggleLikeComment = async (commentID: number) => {
-        const comment = localComments.find(c => c.ID === commentID);
-        if (!comment) return;
-
-        const NoLikes = await likeComment(commentID);
-        setLocalComments(prev => prev.map(c => 
-            c.ID === commentID
-                ? {...c, NoLikes, Liked: !c.Liked}
-                : c
-        ));
+    const handleToggleReactComment = async (commentID: number, typeReact: number) => {
+        const NoReactions = await reactComment(commentID, typeReact);
+        const [NoDislikes, noLikes] = NoReactions;
+        setLocalComments(prev => 
+            prev.map(c => 
+                c.ID === commentID
+                    ? {...c, 
+                        NoLikes: noLikes,
+                        NoDislikes: NoDislikes,
+                        Liked: (typeReact == 1) ? !c.Liked : false, 
+                        Disliked: (typeReact == -1) ? !c.Disliked : false,
+                    }
+                    : c
+            )
+        );
     }
 
     const handleReplyComment = async (commentID: number, reply: string): Promise<ReplyReturn> => {
@@ -181,7 +199,6 @@ export const usePostManager = (postID: number | undefined, username: string) => 
 
     // -----Filter top-level comments (exclude replies)-----
     const topLevelComments = localComments.filter(comment => comment.ParentComment == null);
-
     return {
         // State
         localPost,
@@ -195,16 +212,17 @@ export const usePostManager = (postID: number | undefined, username: string) => 
         isPostOwner,
 
         // Post Actions
-        handleToggleLike,
+        // handleToggleLike,
         handleUpdate,
         handleEditDialogOpen,
         handleEditDialogClose,
+        handleToggleReact,
 
         // Comment Actions
         handleSubmitComment,
         handleUpdateComment,
         handleDeleteComment,
-        handleToggleLikeComment,
+        handleToggleReactComment,
         handleReplyComment,
     }
 };

@@ -5,14 +5,14 @@ import {
 
 import { Comment, ReplyReturn } from '../../types/Comment.tsx';
 import useFetchReply from '../api/comment/useFetchReply.tsx';
-import useLikeComment from '../api/comment/useLikeComment.tsx';
 import useUpdateCommment from '../api/comment/useUpdateComment.tsx';
 import useDeleteComment from '../api/comment/useDeleteComment.tsx';
+import useReactComment from '../api/comment/useReactComment.tsx';
 
 interface UseCommentManagerProps {
     comment: Comment;
     username: string;
-    onLike: (ID: number) => void;
+    onReact: (ID: number, typeReact: number) => void;
     onReply: (commentID: number, reply: string) => Promise<ReplyReturn>;
     onSave: (ID: number, newComment: string) => void;
 }
@@ -20,7 +20,7 @@ interface UseCommentManagerProps {
 export const useCommentManager = ({
     comment,
     username,
-    onLike,
+    onReact,
     onReply,
     onSave,
 }: UseCommentManagerProps) => {
@@ -30,7 +30,7 @@ export const useCommentManager = ({
     const [localReplies, setLocalReplies] = useState<Comment[]>([]);
 
     const { replies, fetchReplies } = useFetchReply();
-    const { likeComment } = useLikeComment();
+    const { reactComment } = useReactComment();
     const { commentUpdate } = useUpdateCommment();
     const { commentDelete } = useDeleteComment();
 
@@ -66,7 +66,11 @@ export const useCommentManager = ({
     };
 
     const handleLike = () => {
-        onLike(comment.ID);
+        onReact(comment.ID, 1);
+    };
+
+    const handleDislike = () => {
+        onReact(comment.ID, -1);
     };
 
     // -----Reply Actions-----
@@ -81,14 +85,17 @@ export const useCommentManager = ({
     const handleReply = async (reply: string) => {
         const data = await onReply(comment.ID, reply);
         const newReply: Comment = {
-            ID: data.id,
+            ID: Date.now(),
             Comment: data.comment,
             CreatedBy: data.created_by,
             NoLikes: 0,
+            NoDislikes:0,
             CreatedAt: null,
             Liked: false,
+            Disliked: false,
             Edited: false,
             EditedAt: null,
+            NoComments: 0,
             ParentComment: comment.ID,
         };
         setLocalReplies(prev => [...prev, newReply]);
@@ -96,17 +103,20 @@ export const useCommentManager = ({
         setShowReplyInput(false);
     };
 
-    const handleToggleLikeReply = async (commentID: number) => {
-        const comment = localReplies.find(c => c.ID === commentID);
-        if (!comment) return;
-
-        const NoLikes = await likeComment(commentID);
+    const handleToggleReactReply = async (commentID: number, typeReact: number) => {
+        const NoReactions = await reactComment(commentID, typeReact);
 
         setLocalReplies(prev =>
             prev.map(c =>
                 c.ID === commentID
-                    ? { ...c, NoLikes, Liked: !c.Liked }
-                    : c
+                ? {
+                    ...c,
+                    NoLikes: NoReactions[1],
+                    NoDislikes: NoReactions[0],
+                    Liked: typeReact === 1 ? !c.Liked : false,
+                    Disliked: typeReact === -1 ? !c.Disliked : false,
+                }
+                : c
             )
         );
     };
@@ -129,10 +139,11 @@ export const useCommentManager = ({
         handleEditDialogClose,
         handleUpdate,
         handleLike,
+        handleDislike,
         handleToggleReplyInput,
         handleToggleReplies,
         handleReply,
-        handleToggleLikeReply,
+        handleToggleReactReply,
         handleDeleteReply,
     };
 };

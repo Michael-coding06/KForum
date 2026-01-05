@@ -21,21 +21,23 @@ CREATE TABLE IF NOT EXISTS posts (
 );
 
 
-CREATE TABLE IF NOT EXISTS post_likes (
+CREATE TABLE IF NOT EXISTS post_reacts (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
     post_id INTEGER NOT NULL,
+    reaction INTEGER NOT NULL DEFAULT 0,
 
-    CONSTRAINT fk_post_likes_user
+    CONSTRAINT fk_post_reacts_user
         FOREIGN KEY (user_id)
         REFERENCES users(id)
         ON DELETE CASCADE,
 
-    CONSTRAINT fk_post_likes_post
+    CONSTRAINT fk_post_reacts_post
         FOREIGN KEY (post_id)
         REFERENCES posts(id)
         ON DELETE CASCADE,
 
-    -- prevents users from having multiple likes for one post
+    -- prevents users from having multiple likes/dislikes for one post
     CONSTRAINT unique_user_post_like UNIQUE (user_id, post_id)
+    CONSTRAINT reaction_vald CHECK (reaction IN (-1, 0, 1))
 );

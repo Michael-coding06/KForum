@@ -14,9 +14,12 @@ import '../Page.css';
 
 const TopicPage = () => {
   const { username } = useOutletContext<{ username: string }>();
-  const { topic } = useParams<string>();
+  const { topicID, topicTitle } = useParams<{
+    topicID: string,
+    topicTitle: string
+  }>();
 
-  const topicTitle = topic?.replaceAll('_', ' ');
+  const title = topicTitle?.replaceAll('_', ' ');
 
   const {
     searchTerm,
@@ -31,8 +34,8 @@ const TopicPage = () => {
     setCreateDetails,
     isFormValid,
     handleCreate,
-    handleToggleLike,
-  } = useTopicManager(topicTitle, username);
+    handleToggleReact
+  } = useTopicManager(Number(topicID), username);
 
   return (
     <Box sx={{ minHeight: '100vh' }} className="forum">
@@ -62,7 +65,7 @@ const TopicPage = () => {
               color: BRAND_PRIMARY,
             }}
           >
-            {topicTitle}
+            {title}
           </Typography>
 
           <Button
@@ -79,7 +82,7 @@ const TopicPage = () => {
 
         <PostList
           posts={filteredPosts}
-          onLike={handleToggleLike}
+          onReact={handleToggleReact}
           username={username}
         />
         <CreateCard

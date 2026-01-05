@@ -27,10 +27,11 @@ CREATE TABLE IF NOT EXISTS comments (
         ON DELETE SET NULL
 );
 
-CREATE TABLE IF NOT EXISTS comment_likes (
+CREATE TABLE IF NOT EXISTS comment_reacts (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
     comment_id INTEGER NOT NULL,
+    reaction INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT fk_comment_likes_user
         FOREIGN KEY (user_id)
@@ -44,4 +45,5 @@ CREATE TABLE IF NOT EXISTS comment_likes (
 
     -- prevents users from having multiple likes for one comment
     CONSTRAINT unique_user_comment_like UNIQUE (user_id, comment_id)
+    CONSTRAINT reaction_vald CHECK (reaction IN (-1, 0, 1))
 );

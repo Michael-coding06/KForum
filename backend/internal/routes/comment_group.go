@@ -16,7 +16,7 @@ func commentGroup(r *gin.RouterGroup) {
 		r.GET("/fetch/:postID", ctrl.Fetch)
 		r.PUT("/update/:commentID", ctrl.Update)
 		r.DELETE("/delete/:commentID", ctrl.Delete)
-		r.POST("/like/:commentID", ctrl.Like)
+		r.POST("/react/:commentID", ctrl.React)
 		r.POST("/reply", ctrl.Reply)
 		r.GET("/reply/fetch/:commentID", ctrl.ReplyFetch)
 	}

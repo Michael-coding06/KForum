@@ -6,7 +6,7 @@ const useCreatePost = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const postCreate = async(title: string, details: string, topic: string) => {
+    const postCreate = async(title: string, details: string, topicID: number) => {
         setLoading(true);
         setError(null);
 
@@ -14,7 +14,7 @@ const useCreatePost = () => {
             const res = await api.post("/post/create", {
                 title: title,
                 details: details,
-                topic: topic
+                topicID: topicID
             });
             // console.log(res.data)
             return (res.data.post);
