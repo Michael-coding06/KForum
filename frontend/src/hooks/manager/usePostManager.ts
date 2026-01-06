@@ -79,6 +79,7 @@ export const usePostManager = (postID: number | undefined, username: string) => 
                 Disliked: comment.Disliked,
                 Liked: comment.Liked,
                 NoComments: comment.NoComments,
+                IsPinned: comment.IsPinned,
                 ParentComment: comment.ParentComment
             }))
         )
@@ -162,6 +163,30 @@ export const usePostManager = (postID: number | undefined, username: string) => 
         );
     };
 
+    const handlePinComment = (commentID: number) => {
+        setLocalComments(prev => {
+            const pinned = prev.find(c => c.ID === commentID);
+            if (!pinned) return prev;
+
+            const others = prev.filter(c => c.ID !== commentID);
+
+            return [
+                { ...pinned, IsPinned: true },
+                ...others
+            ];
+        });
+    };
+
+    const handleUnPinComment = (commentID: number) => {
+        setLocalComments(prev => 
+            prev.map(comment =>
+                comment.ID === commentID
+                    ? {...comment, IsPinned: false}
+                    : comment
+            )
+        );
+    };
+
     const handleDeleteComment = async (commentID: number) => {
         await commentDelete(commentID);
 
@@ -224,5 +249,7 @@ export const usePostManager = (postID: number | undefined, username: string) => 
         handleDeleteComment,
         handleToggleReactComment,
         handleReplyComment,
+        handlePinComment,
+        handleUnPinComment
     }
 };

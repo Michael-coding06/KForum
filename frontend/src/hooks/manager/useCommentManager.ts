@@ -8,6 +8,7 @@ import useFetchReply from '../api/comment/useFetchReply.tsx';
 import useUpdateCommment from '../api/comment/useUpdateComment.tsx';
 import useDeleteComment from '../api/comment/useDeleteComment.tsx';
 import useReactComment from '../api/comment/useReactComment.tsx';
+import usePinCommnet from '../api/comment/usePinCommnet.tsx';
 
 interface UseCommentManagerProps {
     comment: Comment;
@@ -15,6 +16,8 @@ interface UseCommentManagerProps {
     onReact: (ID: number, typeReact: number) => void;
     onReply: (commentID: number, reply: string) => Promise<ReplyReturn>;
     onSave: (ID: number, newComment: string) => void;
+    onPin: (commentID: number) => void;
+    onUnPin: (commentID: number) => void;
 }
 
 export const useCommentManager = ({
@@ -23,6 +26,8 @@ export const useCommentManager = ({
     onReact,
     onReply,
     onSave,
+    onPin,
+    onUnPin
 }: UseCommentManagerProps) => {
     const [editDialogOpen, setEditDialogOpen] = useState<boolean>(false);
     const [showReplyInput, setShowReplyInput] = useState<boolean>(false);
@@ -33,6 +38,7 @@ export const useCommentManager = ({
     const { reactComment } = useReactComment();
     const { commentUpdate } = useUpdateCommment();
     const { commentDelete } = useDeleteComment();
+    const { pinComment } = usePinCommnet();
 
     // -----Fetch replies-----
     useEffect(() => {
@@ -73,6 +79,15 @@ export const useCommentManager = ({
         onReact(comment.ID, -1);
     };
 
+    const handlePin = async () => {
+        await pinComment(comment.ID);
+        if (comment.IsPinned) {
+            onUnPin(comment.ID)
+        } else {
+            onPin(comment.ID);
+        }
+    }
+
     // -----Reply Actions-----
     const handleToggleReplyInput = () => {
         setShowReplyInput(!showReplyInput);
@@ -96,6 +111,7 @@ export const useCommentManager = ({
             Edited: false,
             EditedAt: null,
             NoComments: 0,
+            IsPinned: false,
             ParentComment: comment.ID,
         };
         setLocalReplies(prev => [...prev, newReply]);
@@ -140,6 +156,8 @@ export const useCommentManager = ({
         handleUpdate,
         handleLike,
         handleDislike,
+        handlePin,
+
         handleToggleReplyInput,
         handleToggleReplies,
         handleReply,

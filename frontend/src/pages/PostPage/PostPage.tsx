@@ -44,6 +44,9 @@ const PostPage = () => {
     handleDeleteComment,
     handleToggleReactComment,
     handleReplyComment,
+
+    handlePinComment,
+    handleUnPinComment
   } = usePostManager(Number(postID), username);
 
   const handleSaveUpdate = async (newTitle: string, newDetails: string) => {
@@ -149,6 +152,9 @@ const PostPage = () => {
               onDelete={handleDeleteComment}
               onReact={handleToggleReactComment}
               onReply={handleReplyComment}
+              onPin={handlePinComment}
+              onUnPin={handleUnPinComment}
+              postOwner={localPost.CreatedBy}
             />
           ))}
         </Box>

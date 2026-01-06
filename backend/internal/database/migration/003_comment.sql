@@ -47,3 +47,22 @@ CREATE TABLE IF NOT EXISTS comment_reacts (
     CONSTRAINT unique_user_comment_like UNIQUE (user_id, comment_id)
     CONSTRAINT reaction_vald CHECK (reaction IN (-1, 0, 1))
 );
+
+CREATE TABLE IF NOT EXISTS comment_pins (
+    id SERIAL PRIMARY KEY,
+    comment_id INTEGER NOT NULL,
+    pinned_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    pinned_by INTEGER NOT NULL,
+
+    CONSTRAINT unique_pinned_comment UNIQUE (comment_id),
+
+    CONSTRAINT fk_comment_pin
+        FOREIGN KEY (comment_id)
+        REFERENCES comments(id)
+        ON DELETE CASCADE,
+    
+    CONSTRAINT fk_comment_pin_user
+        FOREIGN KEY (pinned_by)
+        REFERENCES users(id)
+        ON DELETE CASCADE
+);

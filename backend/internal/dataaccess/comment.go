@@ -89,11 +89,19 @@ func FetchComment(username string, postID int) ([]models.CommentReturn, error) {
 				WHERE c2.parent_comment = c.id
 			) AS reply_count,
 
+			EXISTS (
+				SELECT 1 FROM comment_pins cp
+				WHERE cp.comment_id = c.id
+			) AS is_pinned,
+				
 			c.parent_comment
 			
 		FROM comments c
 		JOIN users u ON c.created_by = u.id
-		WHERE c.post_id = $1;
+		WHERE c.post_id = $1
+		ORDER BY 
+			is_pinned DESC,
+			c.created_at DESC
 	`
 	rows, err := db.QueryContext(ctx, query, postID, userID)
 
@@ -119,6 +127,7 @@ func FetchComment(username string, postID int) ([]models.CommentReturn, error) {
 			&comment.Liked,
 			&comment.Disliked,
 			&comment.NoComments,
+			&comment.IsPinned,
 			&comment.ParentComment,
 		); err != nil {
 			return nil, err
@@ -162,6 +171,44 @@ func DeleteComment(commentID int) error {
 		DELETE FROM comments WHERE id = $1;
 	`
 	_, err := db.ExecContext(ctx, query, commentID)
+	return err
+}
+
+func PinComment(username string, commentID int) error {
+	db := database.Connect()
+	defer database.Close(db)
+
+	ctx := context.Background()
+
+	userID, err := utils.GetUserID(ctx, db, username)
+	if err != nil {
+		return err
+	}
+
+	var already bool
+	const queryCheckAlreadyPinned = `
+		SELECT EXISTS (
+			SELECT 1
+			FROM comment_pins
+			WHERE comment_id = $1
+		)
+	`
+	err = db.QueryRowContext(ctx, queryCheckAlreadyPinned, commentID).Scan(&already)
+
+	queryUnPin := `
+		DELETE FROM comment_pins 
+		WHERE comment_id = $1;
+	`
+
+	queryPin := `
+		INSERT INTO comment_pins (comment_id, pinned_by)
+		VALUES ($1, $2);
+	`
+	if already {
+		_, err = db.ExecContext(ctx, queryUnPin, commentID)
+	} else {
+		_, err = db.ExecContext(ctx, queryPin, commentID, userID)
+	}
 	return err
 }
 
@@ -327,6 +374,8 @@ func FetchReply(username string, commentID int) ([]models.CommentReturn, error) 
 				WHERE c2.parent_comment = c.id
 			) AS reply_count,
 
+			FALSE as is_pinned,
+
 			c.parent_comment
 
 		FROM comments c
@@ -357,6 +406,7 @@ func FetchReply(username string, commentID int) ([]models.CommentReturn, error) 
 			&reply.Liked,
 			&reply.Disliked,
 			&reply.NoComments,
+			&reply.IsPinned,
 			&reply.ParentComment,
 		); err != nil {
 			return nil, err

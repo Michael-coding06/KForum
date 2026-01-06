@@ -28,6 +28,7 @@ type CommentReturn struct {
 	EditedAt      *time.Time `json:"EditedAt"`
 	CreatedBy     string     `json:"CreatedBy"`
 	ParentComment *int       `json:"ParentComment`
+	IsPinned      bool       `json:"IsPinned"`
 }
 
 type CommentReaction struct {

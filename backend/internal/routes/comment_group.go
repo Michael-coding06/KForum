@@ -19,5 +19,6 @@ func commentGroup(r *gin.RouterGroup) {
 		r.POST("/react/:commentID", ctrl.React)
 		r.POST("/reply", ctrl.Reply)
 		r.GET("/reply/fetch/:commentID", ctrl.ReplyFetch)
+		r.POST("/pin/:commentID", ctrl.Pin)
 	}
 }

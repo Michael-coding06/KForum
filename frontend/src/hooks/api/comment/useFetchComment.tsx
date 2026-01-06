@@ -14,6 +14,7 @@ const useFetchComments = () => {
 
         try {
             const res = await api.get<Comment[]>(`/comment/fetch/${postID}`);
+            console.log(res.data)
             setComments(res.data)
         } catch (error) {
             if (axios.isAxiosError(error)) {

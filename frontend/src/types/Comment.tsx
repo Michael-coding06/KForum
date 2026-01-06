@@ -12,6 +12,7 @@ export interface Comment {
   NoLikes: number;
   NoDislikes: number;
   NoComments: number;
+  IsPinned: boolean;
   ParentComment: number | null;
 }
 

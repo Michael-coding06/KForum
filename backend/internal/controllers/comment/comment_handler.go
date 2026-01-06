@@ -48,7 +48,7 @@ func (c *Controller) Fetch(ctx *gin.Context) {
 	comments, err := dataComment.FetchComment(username, postID)
 
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch posts"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch comments"})
 		return
 	}
 
@@ -175,4 +175,24 @@ func (c *Controller) ReplyFetch(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, replies)
+}
+
+func (c *Controller) Pin(ctx *gin.Context) {
+	commentIDString := ctx.Param("commentID")
+	commentID, err := strconv.Atoi(commentIDString)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
+		return
+	}
+
+	username, ok := utils.GetUsername(ctx)
+	if !ok {
+		return
+	}
+
+	err = dataComment.PinComment(username, commentID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 }
