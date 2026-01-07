@@ -33,34 +33,36 @@ http://54.206.119.98:3000/KForum
 
 ## 📁 Project Structure
 
+```text
 .
-├── frontend/ # React + TypeScript (Material UI)
-│ └── src/
-│ ├── api/ # API & WebSocket configuration (Axios, Socket.io)
-│ ├── hooks/ # Custom React hooks (logic layer)
-│ │ ├── api/ # Hooks for API calls (fetch, mutate data)
-│ │ └── managers/ # State & business logic managers
-│ ├── image/ # Static image assets
-│ ├── pages/ # Page-level components
-│ ├── types/ # TypeScript type definitions
-│ ├── utils/ # Frontend utility functions
-│ ├── App.tsx # Root React component
-│ ├── index.tsx # React entry point
-│ └── index.css # Global styles
+├── frontend/                       # React + TypeScript (Material UI)
+│   └── src/
+│       ├── api/                    # API & WebSocket configuration
+│       ├── hooks/                  # Custom React hooks (logic layer)
+│       │   ├── api/                # Hooks for API calls
+│       │   └── managers/           # State & logic managers
+│       ├── image/                  # Image assets
+│       ├── pages/                  # Page-level components
+│       ├── types/                  # Typescript type definitions
+│       ├── utils/                  # Shared utility functions  
+│       ├── App.tsx                 # Root React component
+│       ├── index.tsx               # React entry point
+│       └── index.css               # Global styles
 │
-├── backend/ # Go (Golang) + Gin Framework
-│ └── internal/
-│ ├── config/ # Application & environment configuration
-│ ├── controllers/ # HTTP & WebSocket request handlers
-│ ├── dataaccess/ # Database access layer
-│ ├── database/ # PostgreSQL connection & setup & schema representations
-│ ├── middleware/ # Authentication
-│ ├── models/ # Data models
-│ ├── router/ # Gin router initialization
-│ ├── routes/ # API route definitions
-│ └── utils/ # Shared backend utility functions
+├── backend/                        # Go (Golang) + Gin Framework
+│   └── internal/                   
+│       ├── config/                 # Applicaiton & Environment configuration 
+│       ├── controllers/            # HTTP & WebSocket request handlers
+│       ├── dataaccess/             # Database access layer
+│       ├── database/               # PostgreSQL connection & setup 
+│       ├── middleware/             # Authentication
+│       ├── models/                 # Data models 
+│       ├── router/                 # Gin router initialization
+│       ├── routes/                 # API route definitions
+│       └── utils/                  # Shared utility functions 
 │
 └── README.md
+
 
 ## 🏗 Installation & Setup
 
