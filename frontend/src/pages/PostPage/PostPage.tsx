@@ -7,7 +7,9 @@ import {
   Container,
   TextField,
 } from '@mui/material';
-import { useOutletContext, useNavigate, useParams } from 'react-router-dom';
+import { useOutletContext, useNavigate, useParams} from 'react-router-dom';
+import { useEffect } from 'react';
+
 import EditIcon from '@mui/icons-material/Edit';
 
 import Header from '../components/Header.tsx';
@@ -18,6 +20,9 @@ import { timeAgo } from '../../utils/TimeAgo.tsx';
 import { BRAND_PRIMARY, BRAND_PRIMARY_HOVER } from '../components/forum.constants.ts';
 import { usePostManager } from '../../hooks/manager/usePostManager.ts';
 
+//Testing Web Socket
+import useCommentSocket from '../../hooks/api/socket/useCommentSocket.tsx';
+
 const PostPage = () => {
   const { username } = useOutletContext<{ username: string }>();
   const navigate = useNavigate();
@@ -25,6 +30,40 @@ const PostPage = () => {
     postID: string,
     postTitle: string
   }>();
+
+
+
+
+
+  const postManager = usePostManager(Number(postID), username);
+  const { comments, sendComment } = useCommentSocket();
+  const handleWebSocketSubmit = () => {
+    sendComment(postManager.commentText);
+    postManager.setCommentText("");
+  }
+  
+  useEffect(() => {
+  const ws = new WebSocket("ws://localhost:5000/ws");
+
+  ws.onopen = () => {
+    console.log("FRONTEND: connected");
+    ws.send("hello from frontend");
+  };
+
+  ws.onerror = (e) => {
+    console.error("FRONTEND: error", e);
+  };
+
+  ws.onclose = () => {
+    console.log("FRONTEND: closed");
+  };
+
+  return () => ws.close();
+}, []);
+
+
+
+
 
   const {
     localPost,
@@ -61,6 +100,7 @@ const PostPage = () => {
   const handleDislike = () => handleToggleReact(-1);
 
   if (!localPost) return <Typography>Loading post...</Typography>;
+
 
   return (
     <Box sx={{ minHeight: '100vh' }} className="forum">
@@ -129,7 +169,8 @@ const PostPage = () => {
           onKeyDown={(e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
               e.preventDefault();
-              handleSubmitComment();
+              // handleSubmitComment();
+              handleWebSocketSubmit();
             }
           }}
           sx={{
