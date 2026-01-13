@@ -1,8 +1,11 @@
 package routes
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
+)
 
-func GetRoutes() func(r *gin.Engine) {
+func GetRoutes(rdb *redis.Client) func(r *gin.Engine) {
 	return func(r *gin.Engine) {
 		auth := r.Group("/auth")
 		authGroup(auth)
@@ -14,7 +17,7 @@ func GetRoutes() func(r *gin.Engine) {
 		postGroup(post)
 
 		comment := r.Group("/comment")
-		commentGroup(comment)
+		commentGroup(comment, rdb)
 
 		health := r.Group("/health")
 		healthGroup(health)

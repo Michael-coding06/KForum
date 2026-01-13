@@ -5,10 +5,11 @@ import (
 	"backend/internal/middleware"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 )
 
-func commentGroup(r *gin.RouterGroup) {
-	ctrl := commentControl.NewController()
+func commentGroup(r *gin.RouterGroup, rdb *redis.Client) {
+	ctrl := commentControl.NewController(rdb)
 
 	r.Use(middleware.AuthMiddleWare())
 	{

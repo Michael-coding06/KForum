@@ -6,15 +6,16 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 )
 
-func Setup() *gin.Engine {
+func Setup(rdb *redis.Client) *gin.Engine {
 	r := gin.Default()
-	setUpRoutes(r)
+	setUpRoutes(r, rdb)
 	return r
 }
 
-func setUpRoutes(r *gin.Engine) {
+func setUpRoutes(r *gin.Engine, rdb *redis.Client) {
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{os.Getenv("FRONTEND_ORIGIN")},
 		AllowMethods:     []string{"POST", "GET", "OPTIONS", "PUT", "DELETE"},
@@ -22,5 +23,5 @@ func setUpRoutes(r *gin.Engine) {
 		AllowCredentials: true,
 	}))
 
-	routes.GetRoutes()(r)
+	routes.GetRoutes(rdb)(r)
 }

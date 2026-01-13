@@ -8,7 +8,7 @@ import {
   TextField,
 } from '@mui/material';
 import { useOutletContext, useNavigate, useParams} from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import EditIcon from '@mui/icons-material/Edit';
 
@@ -20,8 +20,7 @@ import { timeAgo } from '../../utils/TimeAgo.tsx';
 import { BRAND_PRIMARY, BRAND_PRIMARY_HOVER } from '../components/forum.constants.ts';
 import { usePostManager } from '../../hooks/manager/usePostManager.ts';
 
-//Testing Web Socket
-import useCommentSocket from '../../hooks/api/socket/useCommentSocket.tsx';
+import {io} from "socket.io-client";
 
 const PostPage = () => {
   const { username } = useOutletContext<{ username: string }>();
@@ -30,40 +29,6 @@ const PostPage = () => {
     postID: string,
     postTitle: string
   }>();
-
-
-
-
-
-  const postManager = usePostManager(Number(postID), username);
-  const { comments, sendComment } = useCommentSocket();
-  const handleWebSocketSubmit = () => {
-    sendComment(postManager.commentText);
-    postManager.setCommentText("");
-  }
-  
-  useEffect(() => {
-  const ws = new WebSocket("ws://localhost:5000/ws");
-
-  ws.onopen = () => {
-    console.log("FRONTEND: connected");
-    ws.send("hello from frontend");
-  };
-
-  ws.onerror = (e) => {
-    console.error("FRONTEND: error", e);
-  };
-
-  ws.onclose = () => {
-    console.log("FRONTEND: closed");
-  };
-
-  return () => ws.close();
-}, []);
-
-
-
-
 
   const {
     localPost,
@@ -85,7 +50,11 @@ const PostPage = () => {
     handleReplyComment,
 
     handlePinComment,
-    handleUnPinComment
+    handleUnPinComment,
+
+
+
+    handleSocketComment
   } = usePostManager(Number(postID), username);
 
   const handleSaveUpdate = async (newTitle: string, newDetails: string) => {
@@ -99,8 +68,24 @@ const PostPage = () => {
   const handleLike = () => handleToggleReact(1);
   const handleDislike = () => handleToggleReact(-1);
 
-  if (!localPost) return <Typography>Loading post...</Typography>;
+  useEffect(() => {
+    const socket = io("ws://localhost:4040");   // Will put this in env
 
+    socket.on("connect", () => {
+      console.log("connected to socket:", socket.id);
+    });
+
+    socket.on("new_comment", (comment) => {
+      console.log('Received comment: ', comment);
+      handleSocketComment();
+    })
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  if (!localPost) return <Typography>Loading post...</Typography>;
 
   return (
     <Box sx={{ minHeight: '100vh' }} className="forum">
@@ -169,8 +154,8 @@ const PostPage = () => {
           onKeyDown={(e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
               e.preventDefault();
-              // handleSubmitComment();
-              handleWebSocketSubmit();
+              handleSubmitComment();
+              console.log(topLevelComments)
             }
           }}
           sx={{

@@ -24,3 +24,5 @@
 
 /backend/.env
 /frontend/.env
+
+/backend/socket-server/node_modules

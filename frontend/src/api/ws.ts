@@ -1,38 +1,32 @@
-let socket: WebSocket | null = null;
+let ws: WebSocket | null = null;
 
-export const connectWS = (
-  onMessage: (data: any) => void
-) => {
-  socket = new WebSocket("ws://localhost:5000/ws");
+export const connectWS = (onMessage: (data: any) => void) => {
+  if (ws) return; // prevent duplicates
 
-  socket.onopen = () => {
-    console.log("WebSocket connected");
+  ws = new WebSocket("ws://localhost:5000/ws");
+
+  ws.onopen = () => {
+    console.log("WS connected");
   };
 
-  socket.onmessage = (event) => {
-    try {
-      const data = JSON.parse(event.data);
-      onMessage(data);
-    } catch {
-      console.log("Raw message:", event.data);
-    }
+  ws.onmessage = (e) => {
+    onMessage(JSON.parse(e.data));
   };
 
-  socket.onerror = (err) => {
-    console.error("WebSocket error:", err);
-  };
-
-  socket.onclose = () => {
-    console.log("WebSocket closed");
+  ws.onclose = () => {
+    console.log("WS closed");
+    ws = null;
   };
 };
 
 export const sendWS = (data: any) => {
-  if (socket && socket.readyState === WebSocket.OPEN) {
-    socket.send(JSON.stringify(data));
-  }
+  console.log("function is called")
+  if (!ws || ws.readyState !== WebSocket.OPEN) return;
+  console.log("can bypass the checking")
+  ws.send(JSON.stringify(data));
 };
 
 export const disconnectWS = () => {
-  socket?.close();
+  ws?.close();
+  ws = null;
 };

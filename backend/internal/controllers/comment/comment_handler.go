@@ -4,6 +4,8 @@ import (
 	dataComment "backend/internal/dataaccess"
 	"backend/internal/models"
 	"backend/internal/utils"
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -27,6 +29,17 @@ func (c *Controller) Create(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
+	}
+
+	commentData, _ := json.Marshal(map[string]interface{}{
+		"comment":  req.Comment,
+		"post_id":  req.PostID,
+		"username": username,
+	})
+	err = c.RedisCLient.Publish(ctx, "comment_channel", commentData).Err()
+
+	if err != nil {
+		fmt.Printf("Redis error")
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"comment": []string{req.Comment}})
@@ -170,7 +183,7 @@ func (c *Controller) ReplyFetch(ctx *gin.Context) {
 	replies, err := dataComment.FetchReply(username, commentID)
 
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch posts"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch replies"})
 		return
 	}
 

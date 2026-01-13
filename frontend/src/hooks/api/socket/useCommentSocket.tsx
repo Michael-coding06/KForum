@@ -1,28 +1,35 @@
-import { useEffect, useState } from "react";
-import { connectWS, sendWS, disconnectWS } from "../../../api/ws.ts";
-import { Comment } from "../../../types/Comment.tsx";
+// import { useEffect } from "react";
+// import {io, Socket} from 'socket.io-client';
 
-const useCommentSocket = () => {
-  const [comments, setComments] = useState<Comment[]>([]);
+// const socket: Socket = io("ws://localhost:4040", {
+//   autoConnect: false,
+// })
 
-  useEffect(() => {
-    connectWS((data) => {
-      setComments((prev) => [...prev, data]);
-    });
+// export const useCommentSocket = (postID: string, onCommentReceived: () => void) => {
+//   useEffect(() => {
+//     socket.connect();
+    
+//     socket.emit("post_page", postID); //join room 
 
-    return () => {
-      disconnectWS();
-    };
-  }, []);
+//     socket.on("comment_received", (newComment: string) => { //listen for comments
+//       onCommentReceived() 
+//     });
 
-  const sendComment = (content: string) => {
-    sendWS({
-      type: "send_comment",
-      content,
-    });
-  };
+//     return () => {
+//       socket.emit("leave_post", postID)
+//       socket.off("comment_received")
+//       socket.disconnect();
+//     };
+//   }, [postID])
 
-  return { comments, sendComment };
-};
+//   const sendComment = (comment: string, username: string) => {
+//     socket.emit("comment_sent", {
+//       postID,
+//       comment,
+//       username,
+//       createAt: new Date().toISOString()
+//     });
+//   };
 
-export default useCommentSocket;
+//   return {sendComment};
+// };

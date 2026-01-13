@@ -139,6 +139,14 @@ export const usePostManager = (postID: number | undefined, username: string) => 
     };
 
     //-----Comment Actions-----
+    const handleSocketComment = () => {
+        setLocalPost(prev => 
+            prev 
+                ? {...prev, NoComments: prev.NoComments + 1}
+                : prev
+        )
+    }
+
     const handleSubmitComment = async () => {
         if (!commentText.trim()) return;
         if (localPost) {
@@ -250,6 +258,9 @@ export const usePostManager = (postID: number | undefined, username: string) => 
         handleToggleReactComment,
         handleReplyComment,
         handlePinComment,
-        handleUnPinComment
+        handleUnPinComment,
+
+
+        handleSocketComment
     }
 };
