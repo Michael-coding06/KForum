@@ -8,7 +8,7 @@ import {
   TextField,
 } from '@mui/material';
 import { useOutletContext, useNavigate, useParams} from 'react-router-dom';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
 import EditIcon from '@mui/icons-material/Edit';
 
@@ -60,7 +60,7 @@ const PostPage = () => {
   const handleSaveUpdate = async (newTitle: string, newDetails: string) => {
     const updatedPost = await handleUpdate(newTitle, newDetails);
     if (updatedPost) {
-      navigate(`/post/${updatedPost.Title}`, { replace: true });
+      navigate(`/post/${postID}/${updatedPost.Title}`, { replace: true });
     }
     handleEditDialogClose();
   };
@@ -68,6 +68,7 @@ const PostPage = () => {
   const handleLike = () => handleToggleReact(1);
   const handleDislike = () => handleToggleReact(-1);
 
+  //Will put this in separate file
   useEffect(() => {
     const socket = io("ws://localhost:4040");   // Will put this in env
 

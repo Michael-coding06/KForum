@@ -15,7 +15,7 @@ const useCreateTopic = () => {
                 title: title,
                 description: description,
             });
-            return (res.data.topic);
+            return (res.data.id);
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 alert(error.response?.data?.error ?? "Create failed")

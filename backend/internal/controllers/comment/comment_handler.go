@@ -70,7 +70,7 @@ func (c *Controller) Fetch(ctx *gin.Context) {
 
 func (c *Controller) Update(ctx *gin.Context) {
 
-	commentIDString := ctx.Param("commentID")
+	commentIDString := ctx.Param("id")
 	commentID, err := strconv.Atoi(commentIDString)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
@@ -94,7 +94,7 @@ func (c *Controller) Update(ctx *gin.Context) {
 }
 
 func (c *Controller) Delete(ctx *gin.Context) {
-	commentIDString := ctx.Param("commentID")
+	commentIDString := ctx.Param("id")
 	commentID, err := strconv.Atoi(commentIDString)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
@@ -114,7 +114,7 @@ func (c *Controller) React(ctx *gin.Context) {
 		return
 	}
 
-	commentIDString := ctx.Param("commentID")
+	commentIDString := ctx.Param("id")
 
 	commentID, err := strconv.Atoi(commentIDString)
 	if err != nil {
@@ -173,7 +173,7 @@ func (c *Controller) ReplyFetch(ctx *gin.Context) {
 		return
 	}
 
-	commentIDString := ctx.Param("commentID")
+	commentIDString := ctx.Param("id")
 	commentID, err := strconv.Atoi(commentIDString)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
@@ -191,7 +191,7 @@ func (c *Controller) ReplyFetch(ctx *gin.Context) {
 }
 
 func (c *Controller) Pin(ctx *gin.Context) {
-	commentIDString := ctx.Param("commentID")
+	commentIDString := ctx.Param("id")
 	commentID, err := strconv.Atoi(commentIDString)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})

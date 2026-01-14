@@ -21,12 +21,14 @@ func (c *Controller) Create(ctx *gin.Context) {
 		return
 	}
 
-	if err := dataTopic.CreateTopic(req.Title, req.Description, username); err != nil {
+	id, err := dataTopic.CreateTopic(req.Title, req.Description, username)
+
+	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{"topic": req})
+	ctx.JSON(http.StatusCreated, gin.H{"id": id})
 }
 
 func (c *Controller) Fetch(ctx *gin.Context) {

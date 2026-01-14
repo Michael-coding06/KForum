@@ -10,15 +10,16 @@ import (
 )
 
 type Claims struct {
-	Name string `json:"sub"`
+	UserID   int    `json:"sub"`
+	Username string `json:"username"`
 	jwt.RegisteredClaims
 }
 
 func AuthMiddleWare() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		fmt.Print("at auth middleware right now. Is authorizing...\n")
+		fmt.Printf("at auth middleware right now. Is authorizing...\n")
 		cookie, err := ctx.Request.Cookie("auth_token")
-		fmt.Print("this is the cookie received from auth_token")
+		fmt.Printf("this is the cookie received from auth_token: ", cookie)
 		if err != nil {
 			ctx.AbortWithStatus(http.StatusUnauthorized)
 			return
@@ -33,8 +34,9 @@ func AuthMiddleWare() gin.HandlerFunc {
 			ctx.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
-		username := claims.Name
-		ctx.Set("username", username)
+		fmt.Printf(claims.Username)
+		ctx.Set("username", claims.Username)
+		ctx.Set("userID", claims.UserID)
 		ctx.Next()
 	}
 }

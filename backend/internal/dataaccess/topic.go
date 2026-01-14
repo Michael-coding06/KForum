@@ -26,7 +26,7 @@ func CheckTopicExisting(title string) (bool, error) {
 	return exists, err
 }
 
-func CreateTopic(title, description, username string) error {
+func CreateTopic(title, description, username string) (int, error) {
 	db := database.Connect()
 	defer database.Close(db)
 
@@ -35,21 +35,23 @@ func CreateTopic(title, description, username string) error {
 	exists, err := CheckTopicExisting(title)
 	if exists {
 		fmt.Print("existing")
-		return err
+		return -1, err
 	}
 
 	userID, err := utils.GetUserID(ctx, db, username)
 	if err != nil {
-		return err
+		return -1, err
 	}
 
 	const query = `
 		INSERT INTO topics (title, description, created_by)
-		VALUES ($1, $2, $3);
+		VALUES ($1, $2, $3)
+		RETURNING id;
 	`
 
-	_, err = db.ExecContext(ctx, query, title, description, userID)
-	return err
+	var id int
+	err = db.QueryRowContext(ctx, query, title, description, userID).Scan(&id)
+	return id, err
 }
 
 func FetchTopic(username string) ([]models.TopicReturn, error) {

@@ -46,10 +46,10 @@ export const useForumManager = () => {
 
     // -----CRUD Action-----
     const handleCreate = async(title: string, description: string) => {
-        await topicCreate(title, description);
-        
+        const id = await topicCreate(title, description);
+        if (!id) return
         const newTopic: Topic = {
-            ID: Date.now(),
+            ID: id,
             Title: title,
             Description: description,
             Pinned: false,

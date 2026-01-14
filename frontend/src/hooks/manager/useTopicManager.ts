@@ -91,9 +91,10 @@ export const useTopicManager = (topicID: number | undefined, username: string) =
     const handleCreate = async () => {
         if (!isFormValid || !topicID) return;
 
-        await postCreate(createTitle, createDetails, topicID);
+        const id = await postCreate(createTitle, createDetails, topicID);
+        if (!id) return
         const newPost: Post = {
-            ID: Date.now(),
+            ID: id,
             Title: createTitle,
             Details: createDetails,
             NoLikes: 0,

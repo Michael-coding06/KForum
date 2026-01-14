@@ -16,13 +16,13 @@ func (c *Controller) LogIn(ctx *gin.Context) {
 		return
 	}
 
-	err := dataAuth.VerifyUser(req.Username, req.Password)
+	userID, err := dataAuth.VerifyUser(req.Username, req.Password)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	issuedJWT, _ := models.CreateJWT(req.Username)
+	issuedJWT, _ := models.CreateJWT(userID, req.Username)
 	ctx.SetCookie(
 		"auth_token",
 		issuedJWT,

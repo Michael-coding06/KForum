@@ -9,7 +9,7 @@ import (
 	"fmt"
 )
 
-func CreatePost(title string, details string, topicID int, username string) error {
+func CreatePost(title string, details string, topicID int, username string) (int, error) {
 	db := database.Connect()
 	defer database.Close(db)
 
@@ -17,16 +17,31 @@ func CreatePost(title string, details string, topicID int, username string) erro
 
 	userID, err := utils.GetUserID(ctx, db, username)
 	if err != nil {
-		return err
+		return -1, err
+	}
+
+	const queryCheckExisting = `
+		SELECT EXISTS(SELECT 1 FROM posts WHERE title = $1 AND topic_id = $2);
+	`
+	var exists bool
+	err = db.QueryRowContext(ctx, queryCheckExisting, title, topicID).Scan(&exists)
+	if err != nil {
+		return -1, err
+	}
+
+	if exists {
+		return -1, fmt.Errorf("Title already exists")
 	}
 
 	const query = `
 		INSERT INTO posts (topic_id, title, details, created_by)
-		VALUES ($1, $2, $3, $4);
+		VALUES ($1, $2, $3, $4)
+		RETURNING id;
 	`
 
-	_, err = db.ExecContext(ctx, query, topicID, title, details, userID)
-	return err
+	var id int
+	err = db.QueryRowContext(ctx, query, topicID, title, details, userID).Scan(&id)
+	return id, err
 }
 
 func FetchPost(username string, topicID int) ([]models.PostReturn, error) {

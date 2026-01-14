@@ -14,8 +14,8 @@ func topicGroup(r *gin.RouterGroup) {
 	{
 		r.POST("/create", ctrl.Create)
 		r.GET("/fetch", ctrl.Fetch)
-		r.PUT("/update/:id", ctrl.Update)
-		r.DELETE("/delete/:id", ctrl.Delete)
+		r.PUT("/update/:id", middleware.EditMiddleWare("topics"), ctrl.Update)
+		r.DELETE("/delete/:id", middleware.EditMiddleWare("topics"), ctrl.Delete)
 	}
 	r.POST("/pin", ctrl.Pin)
 }

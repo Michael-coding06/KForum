@@ -33,13 +33,13 @@ func (c *Controller) SignUp(ctx *gin.Context) {
 		return
 	}
 
-	err = dataAuth.AddUser(req.Username, hashedPassword)
+	userID, err := dataAuth.AddUser(req.Username, hashedPassword)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error adding user"})
 		return
 	}
 
-	issuedJWT, _ := models.CreateJWT(req.Username)
+	issuedJWT, _ := models.CreateJWT(userID, req.Username)
 	ctx.SetCookie(
 		"auth_token",
 		issuedJWT,

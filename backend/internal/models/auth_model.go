@@ -16,11 +16,12 @@ type JWTResponse struct {
 	JWT string `json:"JWT"`
 }
 
-func CreateJWT(username string) (string, error) {
+func CreateJWT(userID int, username string) (string, error) {
 	claims := jwt.MapClaims{
-		"sub": username,
-		"iat": jwt.NewNumericDate(time.Now()),
-		"exp": jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour)),
+		"sub":      userID,
+		"username": username,
+		"iat":      jwt.NewNumericDate(time.Now()),
+		"exp":      jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour)),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

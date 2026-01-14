@@ -60,3 +60,15 @@ func GetUsername(ctx *gin.Context) (string, bool) {
 
 	return username, true
 }
+
+func GetUserID2(ctx *gin.Context) (int, bool) {
+	userIDIface, _ := ctx.Get("userID")
+	userID, ok := userIDIface.(int)
+
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid username after decoding JWT"})
+		return -1, false
+	}
+
+	return userID, true
+}

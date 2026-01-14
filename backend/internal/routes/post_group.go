@@ -15,9 +15,8 @@ func postGroup(r *gin.RouterGroup) {
 		r.POST("/create", ctrl.Create)
 		r.GET("/fetch/:topicID", ctrl.Fetch)
 		r.GET("/fetch1/:postID", ctrl.Fetch1)
-		// r.POST("/like", ctrl.Like)
 		r.POST("/react/:postID", ctrl.React)
-		r.PUT("/update/:id", ctrl.Update)
-		r.DELETE("/delete/:id", ctrl.Delete)
+		r.PUT("/update/:id", middleware.EditMiddleWare("posts"), ctrl.Update)
+		r.DELETE("/delete/:id", middleware.EditMiddleWare("posts"), ctrl.Delete)
 	}
 }

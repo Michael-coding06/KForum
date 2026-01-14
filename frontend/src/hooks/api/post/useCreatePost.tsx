@@ -16,8 +16,8 @@ const useCreatePost = () => {
                 details: details,
                 topicID: topicID
             });
-            // console.log(res.data)
-            return (res.data.post);
+            console.log(res.data.id)
+            return (res.data.id);
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 alert(error.response?.data?.error ?? "Create failed")
