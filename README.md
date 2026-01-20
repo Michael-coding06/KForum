@@ -1,6 +1,6 @@
 # KForum — Real-Time Discussion Platform
 
-KForum is a full-stack, real-time forum application developed for the **CVWO 2026 Assignment**. It allows users to engage in dynamic discussions through topics, posts, and nested comments, featuring a hybrid architecture of RESTful APIs and WebSockets.
+KForum is a full-stack, real-time forum website application. It allows users to engage in dynamic discussions through topics, posts, and nested comments, featuring a hybrid architecture of RESTful APIs and WebSockets.
 
 **Live Demo:**  
 http://54.206.119.98:3000/KForum
