@@ -17,9 +17,9 @@ func commentGroup(r *gin.RouterGroup, rdb *redis.Client) {
 		r.GET("/fetch/:postID", ctrl.Fetch)
 		r.PUT("/update/:id", middleware.EditMiddleWare("comments"), ctrl.Update)
 		r.DELETE("/delete/:id", middleware.EditMiddleWare("comments"), ctrl.Delete)
-		r.POST("/react/:commentID", ctrl.React)
+		r.POST("/react/:id", ctrl.React)
 		r.POST("/reply", ctrl.Reply)
-		r.GET("/reply/fetch/:commentID", ctrl.ReplyFetch)
-		r.POST("/pin/:commentID", ctrl.Pin)
+		r.GET("/reply/fetch/:id", ctrl.ReplyFetch)
+		r.POST("/pin/:id", ctrl.Pin)
 	}
 }

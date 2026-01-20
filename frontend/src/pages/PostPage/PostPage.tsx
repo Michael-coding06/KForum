@@ -70,7 +70,7 @@ const PostPage = () => {
 
   //Will put this in separate file
   useEffect(() => {
-    const socket = io("ws://localhost:4040");   // Will put this in env
+    const socket = io("ws://localhost:4001");   // Will put this in env
 
     socket.on("connect", () => {
       console.log("connected to socket:", socket.id);
@@ -79,6 +79,10 @@ const PostPage = () => {
     socket.on("new_comment", (comment) => {
       console.log('Received comment: ', comment);
       handleSocketComment();
+    })
+
+    socket.on("identity", (comment) => {
+      console.log('identity: ', comment);
     })
 
     return () => {
