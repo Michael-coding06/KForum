@@ -68,7 +68,7 @@ const PostPage = () => {
 
   // Connect to socket server right after get into post page
   useEffect(() => {
-    const socket = io(process.env.BACKEND_SOCKET_URL); 
+    const socket = io(process.env.REACT_APP_BACKEND_SOCKET_URL); 
 
     socket.on("connect", () => {
       console.log("connected to socket:", socket.id);

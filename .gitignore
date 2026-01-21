@@ -26,3 +26,5 @@
 /frontend/.env
 
 /backend/socket-server/node_modules
+/backend/socket-server/src
+/backend/socket-server/main1.js
