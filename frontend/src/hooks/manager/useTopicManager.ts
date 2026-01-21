@@ -7,6 +7,7 @@ import {
 
 import { Post } from '../../types/Post.tsx';
 
+// -----Import Hooks-----
 import useCreatePost from '../api/post/useCreatePost.tsx';
 import useFetchPost from '../api/post/useFetchPost.tsx';
 import useReactPost from '../api/post/useReactPost.tsx';
@@ -149,7 +150,6 @@ export const useTopicManager = (topicID: number | undefined, username: string) =
         handleCreateDialogClose,
 
         handleCreate,
-        // handleToggleLike,
         handleToggleReact
     }
 }

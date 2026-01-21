@@ -13,11 +13,8 @@ import CreateCard from './components/CreateCard.tsx';
 import { useForumManager } from '../../hooks/manager/useForumManager.ts';
 
 import { BRAND_PRIMARY, PRIMARY_BUTTON_STYLES } from '../components/forum.constants.ts';
-import '../Page.css'
-
 const ForumPage = () => {
   const { username } = useOutletContext<{ username: string }>();
-
   const {
     searchTerm,
     setSearchTerm,

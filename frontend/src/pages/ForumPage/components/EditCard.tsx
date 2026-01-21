@@ -37,7 +37,7 @@ const EditCard = ({
   onDelete,
 }: EditCardProps) => {
   const [title, setTitle] = useState<string>(topic.Title || '');
-  const [description, setDescription] = useState(topic.Description || '');
+  const [description, setDescription] = useState<string>(topic.Description || '');
 
   const { topicUpdate } = useUpdateTopic();
   const { topicDelete } = useDeleteTopic();

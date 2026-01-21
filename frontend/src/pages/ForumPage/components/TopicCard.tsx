@@ -14,9 +14,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { LABEL_COLORS, BRAND_PRIMARY } from '../../components/forum.constants.ts';
 import { Topic } from '../../../types/Forum.tsx';
 import EditCard from './EditCard.tsx';
-
 import { useNavigate } from 'react-router-dom';
-
 
 interface Props {
   topic: Topic;
@@ -26,7 +24,7 @@ interface Props {
 }
 
 const TopicCard = ({ topic, onPin, onUpdate, onDelete }: Props) => {
-  const [editOpen, setEditOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const handlePin = () => {
@@ -36,8 +34,6 @@ const TopicCard = ({ topic, onPin, onUpdate, onDelete }: Props) => {
   const handleOpenEdit = () => {
     setEditOpen(true);
   };
-
-  
 
   return (
     <Card

@@ -6,14 +6,11 @@ import {
   TextField,
   InputAdornment,
   Button,
-  IconButton,
 } from '@mui/material';
-import { Search, LogOut, ArrowLeft } from 'lucide-react';
+import { Search, LogOut } from 'lucide-react';
 import { BRAND_PRIMARY } from './forum.constants.ts';
 import { useNavigate } from 'react-router-dom';
-
 import logo from '../../image/logo.png';
-
 
 interface HeaderProps {
   username: string;
@@ -32,16 +29,6 @@ const Header = ({
   return (
     <AppBar sx={{ bgcolor: BRAND_PRIMARY }}>
       <Toolbar>
-        {/* <IconButton
-          sx={{ 
-            color: 'white', 
-            mr: 2,
-            '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.1)' }
-          }}
-        >
-          <ArrowLeft size={24} />
-        </IconButton> */}
-        
         <img src={logo} alt="logo" className="logo" 
           style={{ cursor: 'pointer' }}
           onClick = {() => navigate(`/`)}

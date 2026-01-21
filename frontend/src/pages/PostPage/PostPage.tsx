@@ -51,10 +51,7 @@ const PostPage = () => {
 
     handlePinComment,
     handleUnPinComment,
-
-
-
-    handleSocketComment
+    handleSocketComment,
   } = usePostManager(Number(postID), username);
 
   const handleSaveUpdate = async (newTitle: string, newDetails: string) => {
@@ -65,12 +62,13 @@ const PostPage = () => {
     handleEditDialogClose();
   };
 
+  // 1 for like, -1 for dislike
   const handleLike = () => handleToggleReact(1);
   const handleDislike = () => handleToggleReact(-1);
 
-  //Will put this in separate file
+  // Connect to socket server right after get into post page
   useEffect(() => {
-    const socket = io("ws://localhost:4001");   // Will put this in env
+    const socket = io(process.env.BACKEND_SOCKET_URL); 
 
     socket.on("connect", () => {
       console.log("connected to socket:", socket.id);
@@ -79,10 +77,6 @@ const PostPage = () => {
     socket.on("new_comment", (comment) => {
       console.log('Received comment: ', comment);
       handleSocketComment();
-    })
-
-    socket.on("identity", (comment) => {
-      console.log('identity: ', comment);
     })
 
     return () => {

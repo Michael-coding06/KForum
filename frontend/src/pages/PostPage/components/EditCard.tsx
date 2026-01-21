@@ -31,9 +31,8 @@ interface EditCardProps {
 const EditCard = ({ post, open, onClose, onSave }: EditCardProps) => {
   const navigate = useNavigate();
   const { postDelete } = useDeletePost();
-
-  const [title, setTitle] = useState('');
-  const [details, setDetails] = useState('');
+  const [title, setTitle] = useState<string>('');
+  const [details, setDetails] = useState<string>('');
 
   useEffect(() => {
     if (post && open) {

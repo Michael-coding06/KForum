@@ -21,7 +21,7 @@ const useLogIn = () => {
                 password: password,
             });
             console.log(res.data.message);
-            navigate("/", {replace: true})
+            navigate("/", {replace: true});  // redirect users to /KForum (Main page) 
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 alert(error.response?.data?.error ?? "Log in failed");

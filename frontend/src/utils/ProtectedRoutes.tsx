@@ -20,7 +20,6 @@ const ProtectedRoutes = () => {
         })
     }, [])
     
-    //to be put in the context
     if (loading) return <p> Checking authentication...</p>
     return authenticated ? <Outlet context={{username}}/> : <Navigate to = "/auth"/>
 }

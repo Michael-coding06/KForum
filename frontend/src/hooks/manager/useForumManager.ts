@@ -1,11 +1,9 @@
 import {useState, 
     useMemo, 
     useEffect, 
-    // useCallback
 } from 'react';
 
 import { Topic } from '../../types/Forum.tsx';
-
 
 // -----Import Hooks-----
 import useFetchTopic from '../api/topic/useFetchTopic.tsx';
@@ -13,7 +11,6 @@ import useCreateTopic from '../api/topic/useCreateTopic.tsx';
 import usePinTopic from '../api/topic/usePinTopic.tsx';
 
 export const useForumManager = () => {
-
     const [localTopics, setLocalTopics] = useState<Topic[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
@@ -106,5 +103,3 @@ export const useForumManager = () => {
         handlePin
     }
 }
-
-// export default useForumManager;

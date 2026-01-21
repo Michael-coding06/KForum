@@ -19,8 +19,8 @@ interface PostCardProps {
 const PostCard = ({ post, onReact }: PostCardProps) => {
   const navigate = useNavigate();
 
-  const handleLike = () => onReact(post.ID, 1);
-  const handleDislike = () => onReact(post.ID, -1);
+  const handleLike = () => onReact(post.ID, 1); // 1 for like
+  const handleDislike = () => onReact(post.ID, -1); // -1 for dislike
 
   const handleNavigate = () => {
     const postTitle = encodeURIComponent(post.Title.replaceAll(' ', '_'));

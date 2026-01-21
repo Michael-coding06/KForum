@@ -1,19 +1,17 @@
 import {
     useEffect,
     useState,
-    useCallback
 } from 'react';
 
 import {Post} from '../../types/Post.tsx';
 import {Comment, ReplyReturn} from '../../types/Comment.tsx';
 
+// -----Import Hooks for Posts-----
 import useFetch1Post from '../api/post/useFetch1Post.tsx';
-// import useLikePost from '../api/post/useLikePost.tsx';
-// import useDislikePost from '../api/post/useDislikePost.tsx';
-// C:\Users\Admin\Desktop\Projects\CVWO\frontend\src\hooks\api\post\useReactPost.tsx
 import useReactPost from '../api/post/useReactPost.tsx';
 import useUpdatePost from '../api/post/useUpdatePost.tsx';
 
+// -----Import Hooks for Comments-----
 import useCreateComment from '../api/comment/userCreateComment.tsx';
 import useFetchComments from '../api/comment/useFetchComment.tsx';
 import useReactComment from '../api/comment/useReactComment.tsx';
@@ -29,7 +27,6 @@ export const usePostManager = (postID: number | undefined, username: string) => 
 
     // -----Post states and actions-----
     const { postFetch, fetch1Post } = useFetch1Post();
-    // const { likePost } = useLikePost();
     const { reactPost } = useReactPost();
     const { postUpdate } = useUpdatePost();
 
@@ -98,6 +95,7 @@ export const usePostManager = (postID: number | undefined, username: string) => 
     }
 
     //-----Post Actions-----
+    // typeReact = 1 for like, = -1 for dislike
     const handleToggleReact = async (typeReact: number) => {
         if (localPost) {
             const NoReactions = await reactPost(localPost.ID, typeReact);
@@ -139,6 +137,7 @@ export const usePostManager = (postID: number | undefined, username: string) => 
     };
 
     //-----Comment Actions-----
+
     const handleSocketComment = () => {
         setLocalPost(prev => 
             prev 
@@ -260,7 +259,6 @@ export const usePostManager = (postID: number | undefined, username: string) => 
         handlePinComment,
         handleUnPinComment,
 
-
-        handleSocketComment
+        handleSocketComment,
     }
 };

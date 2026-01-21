@@ -18,7 +18,6 @@ const useFetchTopic = () => {
 
         try {
             const res = await api.get<Topic[]>("/topic/fetch");
-            // console.log(res.data)
             setTopics(res.data)
         } catch (error) {
             if (axios.isAxiosError(error)) {

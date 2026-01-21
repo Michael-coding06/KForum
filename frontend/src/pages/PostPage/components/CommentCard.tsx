@@ -121,6 +121,7 @@ const CommentCard = ({ comment, onReact, onReply, onSave, onDelete, onPin, onUnP
             onComment={handleToggleReplyInput}
           />
           
+          {/* display + and - buttons when there are replies to comment */}
           {localReplies.length > 0 && (
             <IconButton
               size="small"
@@ -132,6 +133,7 @@ const CommentCard = ({ comment, onReact, onReply, onSave, onDelete, onPin, onUnP
           )}
         </Box>
         
+        {/* Only show delete button if user is the post owner */}
         {postOwner === username && (
           <Box className="menu-btn" sx={{ position: 'absolute', top: 8, right: 8, opacity: 0 }}>
             <IconButton 
@@ -143,6 +145,7 @@ const CommentCard = ({ comment, onReact, onReply, onSave, onDelete, onPin, onUnP
             </IconButton>
             
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+              {/* Only show edit button if user is the comment owner */}
               {isCommentOwner && (
                 <MenuItem 
                   onClick={() => { 
@@ -189,12 +192,14 @@ const CommentCard = ({ comment, onReact, onReply, onSave, onDelete, onPin, onUnP
         onDelete={onDelete}
       />
 
+      {/* show reply card after reply button is clicked */}
       {showReplyInput && (
         <Box sx={{ marginLeft: 5 }}>
           <ReplyInputCard onReply={handleReply} />
         </Box>
       )}
 
+      {/* show replies if showReplies is true and there are replies to the comment */}
       {showReplies && localReplies.map((reply) => (
         <Box key={reply.ID} sx={{ marginLeft: 5 }}>
           <CommentCard

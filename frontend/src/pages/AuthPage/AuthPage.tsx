@@ -11,31 +11,20 @@ import {
   InputAdornment,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { BRAND_PRIMARY } from "../components/forum.constants.ts";
 import useSignUp from "../../hooks/api/auth/useSignUp.tsx"
-
-// import "../Page.css";
 import useLogIn from "../../hooks/api/auth/useLogIn.tsx";
-const PRIMARY_COLOR = "#5f5a47";
 
 const AuthPage = () => {
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [name, setName] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [isSignUp, setIsSignUp] = useState<boolean>(false);
 
-  const {
-    signup,
-    loading: signupLoading,
-    error: signupError,
-  } = useSignUp();
-
-  const {
-    login,
-    loading: loginLoading,
-    error: loginError,
-  } = useLogIn();
+  const { signup } = useSignUp();
+  const { login } = useLogIn();
 
   const isSubmitDisabled =
     !name.trim() || !password.trim();
@@ -58,7 +47,7 @@ const AuthPage = () => {
   return (
     <Box minHeight="100vh" display="flex" alignItems="center" px={30} className="sign-in">
       <Box>
-        <Typography variant="h3" fontWeight="bold" color={PRIMARY_COLOR} mb={2}>
+        <Typography variant="h3" fontWeight="bold" color={BRAND_PRIMARY} mb={2}>
           KForum
         </Typography>
         <Typography variant="h6" fontSize={25} maxWidth="80%" className="description">
@@ -73,7 +62,7 @@ const AuthPage = () => {
             fontWeight="bold"
             textAlign="center"
             mb={3}
-            color={PRIMARY_COLOR}
+            color={BRAND_PRIMARY}
           >
             {isSignUp ? "Sign Up" : "Welcome back!"}
           </Typography>
@@ -137,7 +126,7 @@ const AuthPage = () => {
               {isSignUp ? "Already have an account? " : "Don't have an account? "}
               <Link
                 sx={{
-                  color: PRIMARY_COLOR,
+                  color: BRAND_PRIMARY,
                   fontWeight: 600,
                   textDecoration: "none",
                   cursor: "pointer",

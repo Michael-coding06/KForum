@@ -4,6 +4,8 @@ import {
 } from 'react';
 
 import { Comment, ReplyReturn } from '../../types/Comment.tsx';
+
+// ------Import Hooks------
 import useFetchReply from '../api/comment/useFetchReply.tsx';
 import useUpdateCommment from '../api/comment/useUpdateComment.tsx';
 import useDeleteComment from '../api/comment/useDeleteComment.tsx';
@@ -34,6 +36,7 @@ export const useCommentManager = ({
     const [showReplies, setShowReplies] = useState<boolean>(false);
     const [localReplies, setLocalReplies] = useState<Comment[]>([]);
 
+    // ------Comment states and actions-----
     const { replies, fetchReplies } = useFetchReply();
     const { reactComment } = useReactComment();
     const { commentUpdate } = useUpdateCommment();
@@ -114,7 +117,7 @@ export const useCommentManager = ({
             IsPinned: false,
             ParentComment: comment.ID,
         };
-        setLocalReplies(prev => [...prev, newReply]);
+        setLocalReplies(prev => [...prev, newReply]); // push reply to the back
         setShowReplies(true);
         setShowReplyInput(false);
     };
