@@ -14,7 +14,7 @@ func main() {
 	_ = godotenv.Load()
 	PORT := os.Getenv("PORT")
 	rdb := redis.NewClient(&redis.Options{
-		Addr: "localhost: 6379", //Will put this into env
+		Addr: os.Getenv("REDIS_URL_SETUP"),
 	})
 
 	if err := rdb.Ping(context.Background()).Err(); err != nil {
