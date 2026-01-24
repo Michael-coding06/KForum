@@ -5,7 +5,6 @@ import "time"
 type CreateRequest struct {
 	Title       string `json:"title" binding:"required"`
 	Description string `json:"description" binding:"required"`
-	// Username    string `json:"username" binding:"required"`
 }
 
 type PinRequest struct {

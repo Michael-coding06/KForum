@@ -38,6 +38,6 @@ CREATE TABLE IF NOT EXISTS post_reacts (
         ON DELETE CASCADE,
 
     -- prevents users from having multiple likes/dislikes for one post
-    CONSTRAINT unique_user_post_like UNIQUE (user_id, post_id)
+    CONSTRAINT unique_user_post_like UNIQUE (user_id, post_id),
     CONSTRAINT reaction_vald CHECK (reaction IN (-1, 0, 1))
 );

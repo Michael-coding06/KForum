@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS comment_reacts (
         ON DELETE CASCADE,
 
     -- prevents users from having multiple likes for one comment
-    CONSTRAINT unique_user_comment_like UNIQUE (user_id, comment_id)
+    CONSTRAINT unique_user_comment_like UNIQUE (user_id, comment_id),
     CONSTRAINT reaction_vald CHECK (reaction IN (-1, 0, 1))
 );
 

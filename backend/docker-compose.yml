@@ -11,17 +11,40 @@ services:
       - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./internal/database/migration:/docker-entrypoint-initdb.d
+
+  socket:
+    image: tranvietkhoa/kforum-backend:latest
+    container_name: backend_socket
+    ports:
+      - "4040:4040"
+    environment:
+      - REDIS_URL=${REDIS_URL}
+      - REDIS_URL_SETUP=${REDIS_URL_SETUP}
+      - SOCKET_PORT=${SOCKET_PORT}
+      - FRONTEND_ORIGIN=${FRONTEND_ORIGIN}
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7
+    container_name: backend_redis
+    restart: always
+    ports:
+      - "6379:6379"
 
   backend:
-    build: .
-    image: backend_docker
+    image: tranvietkhoa/kforum-backend:latest
     container_name: backend_app
     depends_on:
       - db
     environment:
-      PORT: ":5000"
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/forum_db?sslmode=disable
+      - PORT=${PORT}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - REDIS_URL=${REDIS_URL}
+      - REDIS_URL_SETUP=${REDIS_URL_SETUP}
+      - FRONTEND_ORIGIN=${FRONTEND_ORIGIN}
+      - DATABASE_URL=${DATABASE_URL}
     ports:
       - "5000:5000"
     restart: always

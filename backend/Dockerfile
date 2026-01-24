@@ -1,7 +1,13 @@
-FROM golang:1.25-alpine
-
+FROM golang:1.25-alpine AS builder
+WORKDIR /app
 COPY . .
 
-EXPOSE 5000
+RUN go build -o server cmd/server/main.go
 
-CMD ["go", "run", "cmd/server/main.go"]
+FROM alpine:latest
+WORKDIR /app
+COPY --from=builder /app/server .
+COPY --from=builder /app/internal/database/migration ./migrations
+
+EXPOSE 5000
+CMD ["./server"]

@@ -6,7 +6,6 @@ type PostCreate struct {
 	Title   string `json:"title" binding:"required"`
 	Details string `json:"details" binding:"required"`
 	TopicID int    `json:"topicID" binding:"required"`
-	// Username    string `json:"username" binding:"required"`
 }
 
 type PostReturn struct {

@@ -27,6 +27,7 @@ func AddUser(username string, password string) (int, error) {
 
 func CheckExisting(username string) (bool, error) {
 	db := database.Connect()
+	defer database.Close(db)
 
 	query := `
 		SELECT EXISTS(SELECT 1 FROM users WHERE username = $1);
@@ -42,7 +43,7 @@ func CheckExisting(username string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	database.Close(db)
+
 	return exists, nil
 }
 
