@@ -102,8 +102,9 @@ export const useCommentManager = ({
 
     const handleReply = async (reply: string) => {
         const data = await onReply(comment.ID, reply);
+        if (!data) {return}
         const newReply: Comment = {
-            ID: Date.now(),
+            ID: data.id,
             Comment: data.comment,
             CreatedBy: data.created_by,
             NoLikes: 0,

@@ -26,6 +26,6 @@ io.on('connection', (socket) => {
     console.log('a user connected: ', socket.id);
 })
 
-http.listen(process.env.SOCKET_PORT, () => {
-  console.log(`Listening on http://localhost:${process.env.SOCKET_PORT}`);
+http.listen(process.env.SOCKET_PORT, '0.0.0.0', () => {
+  console.log(`Listening on port: ${process.env.SOCKET_PORT}`);
 });
