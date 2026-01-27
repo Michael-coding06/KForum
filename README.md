@@ -93,3 +93,9 @@ docker run -d  -p 3000:3000 --name kforum-frontend kforum-frontend
 ## 📝 Design Philosophy
 
 KForum was built with a focus on **Separation of Concerns**. The frontend uses a **Manager Hook** pattern to separate UI logic from API calls, while the backend utilizes a modular **controller–service–model** pattern.
+
+## Demo vide
+
+https://github.com/user-attachments/assets/6e5cc506-edaf-4113-a627-a762de3d81d5
+
+o
