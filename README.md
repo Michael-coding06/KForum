@@ -3,7 +3,7 @@
 KForum is a full-stack, real-time forum website application. It allows users to engage in dynamic discussions through topics, posts, and nested comments, featuring a hybrid architecture of RESTful APIs and WebSockets.
 
 **Live Demo:**  
-http://54.206.119.98:3000/KForum
+http://3.104.37.58:3000/KForum
 
 ---
 
