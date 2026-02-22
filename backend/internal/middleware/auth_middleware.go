@@ -17,9 +17,7 @@ type Claims struct {
 
 func AuthMiddleWare() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		fmt.Printf("at auth middleware right now. Is authorizing...\n")
 		cookie, err := ctx.Request.Cookie("auth_token")
-		fmt.Printf("this is the cookie received from auth_token: ", cookie)
 		if err != nil {
 			ctx.AbortWithStatus(http.StatusUnauthorized)
 			return
@@ -28,7 +26,6 @@ func AuthMiddleWare() gin.HandlerFunc {
 		token, err := jwt.ParseWithClaims(cookie.Value, claims, func(t *jwt.Token) (interface{}, error) {
 			return config.JWTSecret, nil
 		})
-		fmt.Print("decrypting the token to JWT Secret")
 
 		if err != nil || !token.Valid {
 			ctx.AbortWithStatus(http.StatusUnauthorized)
